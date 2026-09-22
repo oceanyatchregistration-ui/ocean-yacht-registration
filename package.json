@@ -8,7 +8,9 @@
     "db:generate": "drizzle-kit generate",
     "test": "node --import ./scripts/local-env.mjs --test tests/*.test.mjs",
     "test:e2e": "node --import ./scripts/local-env.mjs tests/browser.mjs",
-    "install:ci": "npm ci"
+    "install:ci": "npm ci",
+    "pretest": "npm run build",
+    "pretest:e2e": "npm run build"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.3"
