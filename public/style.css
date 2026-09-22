@@ -224,3 +224,18 @@ body{color:var(--ink);background:var(--white)}
   .hero-media .hero-video{display:none}
   .hero-media .hero-poster{display:block}
 }
+
+
+/* CHECKPOINT 01C — lock hero foreground above streamed media */
+.hero-v2 .hero-shell{z-index:4}
+.hero-v2 .hero-copy,
+.hero-v2 .hero-aside,
+.hero-v2 .hero-scroll{position:relative;z-index:5}
+.hero-v2 .hero-meta,
+.hero-v2 h1,
+.hero-v2 h1 em,
+.hero-v2 .intro,
+.hero-v2 .hero-actions,
+.hero-v2 .hero-primary,
+.hero-v2 .hero-secondary{color:#fff}
+.hero-v2 .hero-primary{color:var(--navy)}
