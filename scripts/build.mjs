@@ -1,0 +1,10 @@
+import {cp,mkdir,rm} from 'node:fs/promises';
+import {build} from 'esbuild';
+await rm('dist',{recursive:true,force:true});
+await mkdir('dist/server',{recursive:true});
+await build({entryPoints:['server/worker.js'],outfile:'dist/server/index.js',bundle:true,format:'esm',platform:'browser',target:'es2022',loader:{'.html':'text'}});
+await cp('public','dist/client',{recursive:true});
+await mkdir('dist/.openai',{recursive:true});
+await cp('.openai/hosting.json','dist/.openai/hosting.json');
+await cp('drizzle','dist/.openai/drizzle',{recursive:true});
+console.log('Built Worker, website assets and database migrations.');
