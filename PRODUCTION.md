@@ -1,20 +1,24 @@
 # Ocean Yacht Registration — Production Checklist
 
-The application is designed for the existing Cloudflare Worker/Sites deployment with D1 and a private R2 binding. Do not put service credentials in browser code or committed files.
+The application is designed for Cloudflare Workers with D1. Private document storage can use Supabase Storage (current production-oriented configuration) or a private R2 `BUCKET` fallback. Do not put service credentials in browser code or committed files.
 
 ## Required platform bindings
 
 - `DB`: production D1 database. Apply all SQL files in `drizzle/` in numeric order.
-- `BUCKET`: private R2 bucket. Public bucket access must remain disabled.
+- `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `SUPABASE_STORAGE_BUCKET`: preferred private Supabase Storage configuration. Keep the secret key in platform secrets.
+- `BUCKET`: optional private R2 fallback. Public bucket access must remain disabled.
 - `ASSETS`: static public assets binding.
 
 ## Required configuration
 
-- `ADMIN_EMAILS`: comma-separated allowlist of administrator email addresses used with the platform-authenticated identity headers.
+- `ADMIN_EMAILS`: comma-separated administrator allowlist.
+- `ADMIN_PASSWORD`: secret administrator password, minimum 16 characters.
+- `ADMIN_SESSION_SECRET`: secret HMAC signing key, minimum 32 characters.
 - `APP_URL`: canonical HTTPS origin, ultimately `https://oceanyachtregistration.com`.
 - `EMAIL_FROM_ADDRESS`: sender identity verified with the transactional email provider.
 - `EMAIL_REPLY_TO`: optional monitored business reply address.
 - `RESEND_API_KEY`: secret; store only in the hosting platform's encrypted secret configuration.
+- `PUBLIC_CONTACT_EMAIL`, `PUBLIC_WHATSAPP`, `PUBLIC_BUSINESS_ADDRESS`: approved public business contact details; leave blank until confirmed by the client.
 
 The application remains functional if email delivery is temporarily unavailable, but production acceptance is incomplete until a real submission and status change both deliver successfully.
 

@@ -27,7 +27,7 @@ Open http://localhost:5173 in your browser. Stop the server with Ctrl+C. If port
 
 Local admin sign-in is simulated by the loopback development proxy. The local application database and private uploads live in `.wrangler/state` and survive a restart. This ZIP excludes live application data, uploaded customer documents, local test data, credentials, dependency folders and Git history.
 
-Production uses Cloudflare Workers, Sites-managed D1 and R2, and platform-owned ChatGPT sign-in. The local development server is not a production authentication solution. `ADMIN_EMAILS` is configured in the project for the site-owner account. The existing Sites project identifier is retained in `.openai/hosting.json`; no source credentials are included.
+Production uses Cloudflare Workers and D1. Private document storage uses Supabase Storage when configured and falls back to a private R2 `BUCKET` binding. Administration uses a Worker-native email/password gate plus signed 12-hour HttpOnly sessions; `ADMIN_EMAILS` is the administrator allowlist. Password/session secrets and storage/email credentials belong only in hosting-platform secret configuration.
 
 ## Build and tests
 

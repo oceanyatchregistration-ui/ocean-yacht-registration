@@ -7,8 +7,8 @@ The original landing-page stylesheet and yacht image are preserved in `public/`.
 - Browser: existing HTML/CSS/JavaScript, with a five-step portal. No client-side secret or database access.
 - Server: an ESM Cloudflare Worker, built with esbuild. All authoritative operations run here.
 - Relational database: Sites-managed Cloudflare D1 (SQLite). No Supabase/PostgreSQL project or credentials were provided. Prepared statements and transactional batches are used.
-- File storage: Sites-managed R2, accessible exclusively through server bindings.
-- Auth: Sites dispatch-owned Sign in with ChatGPT; admin authorization checks the trusted identity headers against `ADMIN_EMAILS`, then the stored user role, on every admin request. Browser admin pages contain no private data. No custom password database.
+- File storage: private Supabase Storage when `SUPABASE_URL` + `SUPABASE_SECRET_KEY` are configured; otherwise a private R2 `BUCKET` binding. Storage is server-only.
+- Auth: Worker-native administrator login. The submitted email must be in `ADMIN_EMAILS` and the password must match the server secret `ADMIN_PASSWORD`. Successful login receives a signed 12-hour HttpOnly `oyr_admin` cookie using `ADMIN_SESSION_SECRET`; every admin API request re-checks the allowlist and stored ADMIN role.
 - Local development: a loopback-only proxy simulates SIWC, strips identity headers, and uses a random HttpOnly cookie. This simulator is not included in the Worker artifact.
 
 ## Schema
@@ -26,7 +26,7 @@ Status transitions are checked in the server and a database trigger. The same tr
 - `/track`: reference plus application email; returns a deliberately restricted progress view.
 - `/admin` and `/admin/login`: authenticated administration and inbox, search/filter/pagination.
 - `/admin/applications/:reference`: full details, authenticated document downloads and status updates.
-- Platform-owned `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback` are not implemented in application code.
+- `/api/admin/login`, `/api/admin/logout` and `/api/admin/me` implement the administrator session lifecycle. No third-party identity flow is required by the current source.
 
 ## API
 
@@ -45,7 +45,7 @@ Status transitions are checked in the server and a database trigger. The same tr
 
 Server validation covers required fields, types, lengths, numeric ranges, year bounds, service availability, explicit consent, stale versions and allowed transitions. Pricing is calculated server-side from the client-approved EUR matrix (length tier, service type, intended use, MMSI, priority and delivery) and saved as an immutable submission snapshot. Browser-supplied totals are ignored. Registration renewal is intentionally unsupported.
 
-Uploads allow PDF, JPEG and PNG only, with matching extension/MIME/file signatures; ten files per draft, ten MB each. Requests are streamed with a bounded body limit. R2 paths never reach public tracking or draft responses. Admin downloads are authorization checked, forced attachments, non-cacheable and sandboxed. Files are not antivirus-scanned in this milestone.
+Uploads allow PDF, JPEG and PNG only, with matching extension/MIME/file signatures; ten files per draft, ten MB each. Requests are streamed with a bounded body limit. Private storage paths never reach public tracking or draft responses. Admin downloads are authorization checked, forced attachments, non-cacheable and sandboxed. Files are not antivirus-scanned in this milestone.
 
 All mutating API calls require a matching Origin and custom same-origin header; draft cookies are HttpOnly, SameSite=Strict and Secure on HTTPS. Sensitive API responses are non-cacheable. Tracking and upload/submission operations are rate limited in D1. Tracking returns only reference, vessel name, service, current status and customer-visible timestamped history. Unknown references and wrong emails return the same neutral result.
 
