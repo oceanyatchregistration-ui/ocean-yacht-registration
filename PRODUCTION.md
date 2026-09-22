@@ -48,3 +48,14 @@ Do not call the service production-ready until all of the following pass against
 ## Domain cutover
 
 Only point `oceanyachtregistration.com` to the deployment after the live acceptance gate passes on the provider URL/staging hostname. Configure the final domain first in `APP_URL`, verify HTTPS, then repeat submission/email/tracking once after cutover.
+
+## Administrator authentication
+
+The production admin portal uses a Worker-native signed session. Configure `ADMIN_EMAILS` as the allowlist and store both `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` as Cloudflare Worker secrets. `ADMIN_PASSWORD` must be at least 16 characters. `ADMIN_SESSION_SECRET` must be at least 32 characters and should be randomly generated. Never commit either value. Admin sessions are HttpOnly, SameSite=Strict, Secure on HTTPS, and expire after 12 hours.
+
+```bash
+npx wrangler secret put ADMIN_PASSWORD --config wrangler.production.jsonc
+npx wrangler secret put ADMIN_SESSION_SECRET --config wrangler.production.jsonc
+```
+
+Do not place either secret in `wrangler.production.jsonc`, GitHub, screenshots, chat, or documentation.
