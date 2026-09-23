@@ -72,3 +72,7 @@
 .registry-course:before{background:radial-gradient(circle at 88% 15%,rgba(255,255,255,.09),transparent 35%),linear-gradient(115deg,transparent 58%,rgba(255,255,255,.025) 58%)}
 .course-map article>i{background:var(--blue);box-shadow:0 0 0 7px var(--blue)}
 @media(max-width:700px){.course-map article>i{box-shadow:0 0 0 6px var(--blue)}}
+
+
+/* Brand-blue correction: contact/application section was still carrying the legacy navy. */
+.contact-section.contact-v3{background:var(--blue)}
