@@ -61,7 +61,12 @@ throw new HttpError(404,'Not found.');}
 throw new HttpError(404,'Not found.');}
 if(!['GET','HEAD'].includes(req.method))throw new HttpError(405,'Method not allowed.');
 if(path==='/'||path==='/index.html')return html(home);
-if(path==='/register'){try{const services=await catalogue(env);let app=await currentDraft(req,env,false);let setCookie='';if(!app){const token=randomToken(),appId=id(),time=now();await db(env).batch([stmt(env,`INSERT INTO applications(id,reference,status,draft_payload,created_at,updated_at) VALUES(?,?,'DRAFT',?,?,?)`,appId,reference(),JSON.stringify({}),time,time),stmt(env,'INSERT INTO draft_sessions(token_hash,application_id,expires_at) VALUES(?,?,?)',await hash(token),appId,new Date(Date.now()+7*86400000).toISOString())]);app=await currentById(env,appId);setCookie=`oyr_draft=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800${url.protocol==='https:'?'; Secure':''}`;}const bootstrap=JSON.stringify({services,documentTypes:DOCUMENT_TYPES,consentVersion:CONSENT_VERSION,draft:await draftView(env,app)}).replace(/</g,'\\u003c');const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260923-4').replace('<script type="module" src="/portal.js?v=20260923-2"></script>',`<script>window.__OYR_BOOTSTRAP__=${bootstrap}</script><script type="module" src="/portal.js?v=20260923-4"></script>`);const response=html(freshPortal);if(setCookie)response.headers.set('Set-Cookie',setCookie);return response;}catch(e){console.error('Registration bootstrap failed',{error:e?.message});}}
+if(path==='/register'){
+  const shell=portal
+    .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>','<main class="wrap portal-wrap" id="portal"><div class="portal-heading"><div><p class="eyebrow">START YOUR REGISTRATION</p><h1>Your next chapter.</h1><p>A clear path from your first details to your application.</p></div></div><section class="panel"><h2>Package</h2><p class="subtle">Preparing your secure registration workspace…</p><div class="actions"><a class="button blue" href="/register?start=1">Start registration <span>→</span></a><a class="text-button" href="/track">Track an application ↗</a></div></section></main>')
+    .replace('/portal.js?v=20260923-2','/portal.js?v=20260923-5');
+  return html(shell);
+}
 if(['/register','/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path)){const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260923-4');return html(freshPortal);}
 if(path==='/health')return json({ok:true});
 if(env.ASSETS)return env.ASSETS.fetch(req);
