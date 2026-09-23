@@ -26,15 +26,14 @@ async function loadPublicContact(){
 loadPublicContact();
 
 
-/* Cinematic hero playlist: remote Pexels footage with seamless dual-video crossfade.
-   The original self-hosted hero remains the final fallback if a remote source fails. */
+/* Cinematic hero playlist: self-hosted turquoise yacht footage with seamless dual-video crossfade. */
 (function initHeroPlaylist(){
   const layers=[document.querySelector('.hero-video-a'),document.querySelector('.hero-video-b')];
   if(layers.some(v=>!v))return;
   const playlist=[
-    'https://videos.pexels.com/video-files/31187407/31187407-hd_1920_1080_30fps.mp4',
-    'https://videos.pexels.com/video-files/6346159/6346159-hd_1920_1080_60fps.mp4',
-    'https://videos.pexels.com/video-files/19948847/19948847-hd_1920_1080_30fps.mp4'
+    '/media/hero-yacht-01.mp4',
+    '/media/hero-yacht-02.mp4',
+    '/media/hero-yacht-03.mp4'
   ];
   const fallback='/media/ocean-yacht-hero.mp4';
   let active=0,index=0,transitioning=false;
