@@ -51,6 +51,14 @@ This starts the built Worker through a loopback test server, applies every migra
 
 Changes belong exclusively on `redesign/luxury-marine-v2`. The approved cinematic hero is locked by `tests/hero.test.mjs`; do not alter its markup, shared stylesheet or media. Main-branch changes and production cutover require owner approval.
 
+## Homepage motion and marine artwork
+
+`client/motion.js` uses GSAP and ScrollTrigger from npm, following https://gsap.com/docs/v3/Installation/. The build bundles it to `dist/client/motion.js`; both Wrangler configurations serve `dist/client`. Run `npm run build` before deploying. `npm run dev` builds automatically; restart it after source changes.
+
+Motion is scoped below the cinematic hero: staggered editorial reveals, a scroll-linked process line and subtle desktop image movement. Native scrolling remains intact. Reduced-motion preferences disable the GSAP layer, keyboard focus reveals its target immediately, and content remains visible if JavaScript is unavailable. The isolated browser suite includes `tests/motion.mjs` for four viewport sizes, interaction checks and motion fallback checks.
+
+`public/media/ocean-sailing-editorial.webp` is original AI-generated editorial artwork created with Higgsfield (`gpt_image_2_5`, job `80d06d9a-ed97-405f-8a2e-1ce5bb66f256`, 23 September 2026). It depicts a white sailing yacht on turquoise water; it does not depict a client vessel or testimonial. The optimized image is self-hosted, lazy-loaded and used only in the below-hero marine feature. Existing hero media and playlist are unchanged.
+
 ## Project layout
 
 - `public/`: website, approved stylesheet, yacht image and registration/admin/tracking UI

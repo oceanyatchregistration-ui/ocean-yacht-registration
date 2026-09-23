@@ -6,6 +6,9 @@ try{
     server.once('exit',code=>{clearTimeout(timer);reject(new Error(`Acceptance server exited: ${code}`));});
     server.stdout.on('data',chunk=>{process.stdout.write(chunk);if(chunk.toString().includes('Acceptance server ready')){clearTimeout(timer);resolve();}});
   });
-  const browser=spawn(process.execPath,['--import','./scripts/local-env.mjs','tests/browser.mjs'],{stdio:'inherit',env:{...process.env,OYR_TEST_ORIGIN:'http://127.0.0.1:5173'}});
-  process.exitCode=await new Promise(resolve=>browser.on('exit',code=>resolve(code??1)));
+  for(const suite of ['tests/browser.mjs','tests/motion.mjs']){
+    const browser=spawn(process.execPath,['--import','./scripts/local-env.mjs',suite],{stdio:'inherit',env:{...process.env,OYR_TEST_ORIGIN:'http://127.0.0.1:5173'}});
+    process.exitCode=await new Promise(resolve=>browser.on('exit',code=>resolve(code??1)));
+    if(process.exitCode)break;
+  }
 }finally{server.kill('SIGTERM');}

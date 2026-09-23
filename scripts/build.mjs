@@ -4,6 +4,7 @@ await rm('dist',{recursive:true,force:true});
 await mkdir('dist/server',{recursive:true});
 await build({entryPoints:['server/worker.js'],outfile:'dist/server/index.js',bundle:true,format:'esm',platform:'browser',target:'es2022',loader:{'.html':'text'}});
 await cp('public','dist/client',{recursive:true});
+await build({entryPoints:['client/motion.js'],outfile:'dist/client/motion.js',bundle:true,minify:true,format:'esm',platform:'browser',target:'es2022',legalComments:'eof'});
 await mkdir('dist/.openai',{recursive:true});
 await cp('.openai/hosting.json','dist/.openai/hosting.json');
 await cp('drizzle','dist/.openai/drizzle',{recursive:true});

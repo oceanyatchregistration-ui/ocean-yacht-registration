@@ -13,8 +13,8 @@ const env=platform.env;
 for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort()){
   for(const sql of (await readFile('drizzle/'+file,'utf8')).split('--> statement-breakpoint').map(x=>x.trim()).filter(Boolean))await env.DB.prepare(sql).run();
 }
-const assets=resolve('public');
-const types={html:'text/html',css:'text/css',js:'text/javascript',svg:'image/svg+xml',jpg:'image/jpeg',mp4:'video/mp4'};
+const assets=resolve('dist/client');
+const types={html:'text/html',css:'text/css',js:'text/javascript',svg:'image/svg+xml',jpg:'image/jpeg',webp:'image/webp',mp4:'video/mp4'};
 env.ASSETS={async fetch(request){
   const path=resolve(assets,'.'+new URL(request.url).pathname);
   if(!path.startsWith(assets+sep))return new Response('Not found',{status:404});
