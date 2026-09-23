@@ -24,3 +24,56 @@ async function loadPublicContact(){
   }catch{}
 }
 loadPublicContact();
+
+
+/* Cinematic hero playlist: remote Pexels footage with seamless dual-video crossfade.
+   The original self-hosted hero remains the final fallback if a remote source fails. */
+(function initHeroPlaylist(){
+  const layers=[document.querySelector('.hero-video-a'),document.querySelector('.hero-video-b')];
+  if(layers.some(v=>!v))return;
+  const playlist=[
+    'https://videos.pexels.com/video-files/31187407/31187407-hd_1920_1080_30fps.mp4',
+    'https://videos.pexels.com/video-files/6346159/6346159-hd_1920_1080_60fps.mp4',
+    'https://videos.pexels.com/video-files/19948847/19948847-hd_1920_1080_30fps.mp4'
+  ];
+  const fallback='/media/ocean-yacht-hero.mp4';
+  let active=0,index=0,transitioning=false;
+  const nextIndex=()=>{index=(index+1)%playlist.length;return index};
+  const load=(video,src)=>{if(video.dataset.src===src)return;video.dataset.src=src;video.src=src;video.load()};
+  const prime=()=>load(layers[1-active],playlist[(index+1)%playlist.length]);
+
+  layers.forEach(video=>{
+    video.addEventListener('error',()=>{
+      if(video.dataset.src!==fallback){load(video,fallback);video.play().catch(()=>{})}
+    });
+  });
+
+  async function advance(){
+    if(transitioning)return;
+    transitioning=true;
+    const from=layers[active],to=layers[1-active],target=playlist[nextIndex()];
+    load(to,target);
+    try{
+      await new Promise((resolve,reject)=>{
+        if(to.readyState>=3)return resolve();
+        const ok=()=>{cleanup();resolve()},bad=()=>{cleanup();reject()};
+        const cleanup=()=>{to.removeEventListener('canplay',ok);to.removeEventListener('error',bad)};
+        to.addEventListener('canplay',ok,{once:true});to.addEventListener('error',bad,{once:true});
+        setTimeout(()=>{cleanup();to.readyState>=2?resolve():reject()},6000);
+      });
+      to.currentTime=0;await to.play();
+      to.classList.add('is-active');from.classList.remove('is-active');
+      setTimeout(()=>{from.pause();active=1-active;transitioning=false;prime()},1100);
+    }catch{
+      transitioning=false;
+      load(to,fallback);
+    }
+  }
+
+  layers.forEach(video=>video.addEventListener('timeupdate',()=>{
+    if(video===layers[active]&&video.duration&&video.duration-video.currentTime<1.35)advance();
+  }));
+  layers.forEach(video=>video.addEventListener('ended',advance));
+  layers[0].play().catch(()=>{});
+  prime();
+})();
