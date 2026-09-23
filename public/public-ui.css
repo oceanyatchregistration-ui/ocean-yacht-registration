@@ -65,3 +65,76 @@
 @media(prefers-reduced-motion:reduce){
  .hero-media .hero-video{transition:none}
 }
+
+
+/* LIGHT MARINE SYSTEM — one coherent premium blue/white language across the public frontend. */
+:root{--marine-ink:#07365b;--marine-blue:#1779c8;--marine-sky:#eaf7fc;--marine-ice:#f5fbfe;--marine-line:#c9e2ee;--marine-muted:#607f93}
+body{background:#fff;color:var(--marine-ink)}
+header{background:#1780d2}
+.hero-wash{background:linear-gradient(90deg,rgba(3,43,73,.56) 0%,rgba(5,67,99,.30) 43%,rgba(19,130,163,.08) 75%,rgba(255,255,255,.03) 100%)!important}
+
+/* Standard + registration course */
+.proof-deck{background:var(--marine-ice)}
+.proof-deck-lead,.deck-stat{border-color:var(--marine-line)}
+.proof-deck-lead h2,.deck-stat>strong{color:var(--marine-ink)}
+.deck-stat-secure{background:#e4f5fb}
+.registry-course{background:linear-gradient(135deg,#e7f6fc 0%,#f8fdff 56%,#dff3fb 100%);color:var(--marine-ink)}
+.registry-course:before{background:radial-gradient(circle at 88% 12%,rgba(37,167,211,.13),transparent 34%),linear-gradient(115deg,transparent 58%,rgba(20,121,172,.035) 58%)}
+.registry-course-copy{border-color:rgba(20,105,150,.17)}
+.registry-course-copy h2{color:var(--marine-ink)}
+.registry-course-copy h2 em{color:#1781b7}
+.registry-course-copy>p,.course-map p{color:var(--marine-muted)}
+.deck-overline-light,.course-map article>span{color:#5790ad}
+.course-actions .course-primary{background:var(--marine-blue)!important;color:#fff!important;border-color:var(--marine-blue)!important}
+.course-actions>a:last-child{color:#346c89;border-color:#8bb8cb}
+.course-line{background:#a9cfdf}
+.course-map article>i{background:#eef9fd;border-color:#1884b9;box-shadow:0 0 0 7px #eef9fd}
+.course-map strong{color:var(--marine-ink)}
+.course-meta{border-color:rgba(20,105,150,.17);color:#5b8499}
+
+/* Services + image feature */
+.services-v3{background:#f1f9fd}
+.service-ledger{border-color:#b8d8e6}
+.service-row{border-color:#c9e1eb}
+.service-row-featured,.service-row:hover{background:#fff}
+.service-title,.service-row strong,.marine-copy h2,.marine-facts p{color:var(--marine-ink)}
+.service-arrow{color:var(--marine-blue)}
+.marine-feature-v3{background:#fff}
+
+/* Journey: replace the navy wall with a premium pale-ocean field. */
+.journey-v3{background:linear-gradient(180deg,#e7f6fc 0%,#f4fbfe 100%);color:var(--marine-ink)}
+.journey-v3 h2,.journey-steps h3{color:var(--marine-ink)}
+.journey-head>p,.journey-steps p{color:var(--marine-muted)}
+.journey-line{background:#b9dbe8}.journey-line span{background:var(--marine-blue)}
+.journey-steps article{border-color:#c9e2ec}
+.journey-steps span{color:#3384aa}
+.journey-actions>a:last-child{color:#346c89}
+.journey-v3 .hero-primary{background:var(--marine-blue);border-color:var(--marine-blue);color:#fff}
+
+/* Pricing, tracking, reviews and contact continue the same light rhythm. */
+.pricing-v3{background:#fff}
+.price-v3-grid article{border-color:#c6dfe9;background:#f7fcfe}
+.price-v3-grid .price-featured{background:#e8f7fc;border-color:#91cce3}
+.pricing-extras,.pricing-extras>div{border-color:#c9e1eb}
+.tracking-callout{background:linear-gradient(120deg,#dff4fb,#f4fbfe)!important;color:var(--marine-ink)!important}
+.tracking-callout h2{color:var(--marine-ink)!important}
+.tracking-callout .eyebrow,.tracking-index,.tracking-copy>p{color:var(--marine-muted)!important}
+.tracking-callout .light-link{color:var(--marine-blue)!important;border-color:#91bfd2!important}
+.testimonials-v3{background:#fff}
+.review-placeholder,.review-card,.review-submit{border-color:#c9e1eb}
+.contact-v3{background:#edf8fc!important;color:var(--marine-ink)!important}
+.contact-v3 h2{color:var(--marine-ink)!important}
+.contact-v3 .eyebrow,.contact-v3 .contact-index,.contact-v3 .contact-copy>p,.contact-note p{color:var(--marine-muted)!important}
+.contact-note{border-color:#bfdce8!important}
+.contact-v3 form{background:#fff;box-shadow:0 24px 70px rgba(18,88,126,.09)}
+.faq-v3{background:#fff}
+.closing-v3{background:#f1f9fd}
+footer{background:#07365b}
+
+/* Keep the action blue consistent everywhere instead of mixing several blues. */
+.button.blue{background:var(--marine-blue);border-color:var(--marine-blue);color:#fff}
+.button.blue:hover,.journey-v3 .hero-primary:hover,.course-actions .course-primary:hover{background:#0d68ad;border-color:#0d68ad}
+.eyebrow{color:#4383a3}
+@media(max-width:700px){
+ .course-map article>i{box-shadow:0 0 0 6px #eef9fd}
+}
