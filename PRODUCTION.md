@@ -27,7 +27,7 @@ The application remains functional if email delivery is temporarily unavailable,
 1. Run `npm ci` from a clean checkout.
 2. Run `npm run build`.
 3. Run `npm test`.
-4. Run the browser acceptance test on desktop and mobile viewports.
+4. Run `npm run test:e2e:isolated` for disposable desktop, tablet and mobile browser acceptance. See `QA_REPORT.md` for the latest local evidence.
 5. Confirm there are no real `.env`, `.dev.vars`, API keys or customer documents in the repository/archive.
 6. Confirm the production service catalogue contains no registration-renewal or legacy flag-change entry.
 7. Confirm the pricing matrix with the client before changing any values.

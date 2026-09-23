@@ -9,5 +9,18 @@ document.querySelector('#year').textContent=new Date().getFullYear();
 async function loadReviews(){const box=document.querySelector('#review-list');if(!box)return;try{const r=await fetch('/api/reviews');const data=await r.json();if(data.items?.length)box.innerHTML=data.items.map(x=>`<article class="review-card"><span>${'★'.repeat(x.rating)}${'☆'.repeat(5-x.rating)}</span><p>“${String(x.comment).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}”</p><strong>${String(x.name).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</strong><small>${x.country?String(x.country).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])):''}</small></article>`).join('');}catch{}}
 const reviewForm=document.querySelector('#review-form');reviewForm?.addEventListener('submit',async e=>{e.preventDefault();const button=reviewForm.querySelector('button'),msg=document.querySelector('#review-message');button.disabled=true;msg.textContent='';try{const body=Object.fromEntries(new FormData(reviewForm));body.rating=Number(body.rating);const r=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json','X-OYR-Request':'1'},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw new Error(data.error);msg.textContent=data.message;reviewForm.reset();}catch(err){msg.textContent=err.message||'Unable to submit review.';}finally{button.disabled=false;}});
 loadReviews();
-async function loadPublicContact(){try{const r=await fetch('/api/public-config');const c=await r.json();const email=document.querySelector('#floating-email'),wa=document.querySelector('#floating-whatsapp');if(c.contactEmail)email.href=`mailto:${c.contactEmail}`;if(c.whatsapp){const digits=String(c.whatsapp).replace(/\D/g,'');if(digits){wa.href=`https://wa.me/${digits}`;wa.target='_blank';wa.rel='noopener noreferrer';}}if(c.contactEmail||c.whatsapp){[email,wa].forEach(a=>{if(a.getAttribute('href')==='#contact')a.hidden=true;});}}catch{}}
+async function loadPublicContact(){
+  try {
+    const response=await fetch('/api/public-config');
+    if(!response.ok)return;
+    const config=await response.json();
+    const email=document.querySelector('#floating-email');
+    const whatsapp=document.querySelector('#floating-whatsapp');
+    if(config.contactEmail&&email){email.href=`mailto:${config.contactEmail}`;email.hidden=false;}
+    const digits=String(config.whatsapp||'').replace(/\D/g,'');
+    if(digits&&whatsapp){whatsapp.href=`https://wa.me/${digits}`;whatsapp.target='_blank';whatsapp.rel='noopener noreferrer';whatsapp.hidden=false;}
+    const contact=document.querySelector('#business-contact');
+    if(contact){contact.textContent=[config.contactEmail,config.businessAddress].filter(Boolean).join(' · ');contact.hidden=!contact.textContent;}
+  }catch{}
+}
 loadPublicContact();

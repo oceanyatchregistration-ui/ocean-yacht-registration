@@ -22,7 +22,7 @@ export async function pricing(env,packageData){
  const service=SERVICE_CONFIG.find(s=>s.id===p?.serviceId);
  if(!service)throw new HttpError(400,'Please choose an available registration service.');
  if(p.length==null)return {mode:'CALCULATED',currency:'EUR',serviceId:service.id,serviceName:service.name};
- const length=Number(p.length); if(!Number.isFinite(length)||length<=0||length>24)throw new HttpError(400,'Polish registration pricing is configured for vessels up to 24 metres.');
+ const length=Number(p.length); if(!Number.isFinite(length)||length<1||length>24)throw new HttpError(400,'Polish registration pricing is configured for vessels up to 24 metres.');
  const base=length<=7?35000:length<=12?45000:55000;
  const serviceFee=SERVICE_SURCHARGE[service.id];
  const usage={PRIVATE:0,COMMERCIAL:25000,BAREBOAT:25000}[p.intendedUse];

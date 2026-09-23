@@ -1,4 +1,4 @@
-# Ocean Yacht Registration — local source snapshot
+# Ocean Yacht Registration
 
 This archive contains the current Ocean project, including the approved website and the registration/backend implementation in progress.
 
@@ -10,13 +10,11 @@ Install Node.js 22 or newer with npm. Extract this ZIP, open a terminal in the e
 
 ```sh
 npm ci
-node --import ./scripts/local-env.mjs node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --file drizzle/0000_medical_glorian.sql
-node --import ./scripts/local-env.mjs node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --file drizzle/0001_workflow_guards.sql
-node --import ./scripts/local-env.mjs node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --file drizzle/0002_service_catalog_cleanup.sql
+node --import ./scripts/local-env.mjs node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --local --persist-to .wrangler/state
 npm run dev
 ```
 
-The migration commands initialise a NEW local database and apply workflow/service guards. Run them once for a fresh extraction, not every time you start the project.
+The migration commands initialise a NEW local database and apply workflow/service guards. The migration runner records applied migrations and safely applies only pending files, including reviews.
 
 Open http://localhost:5173 in your browser. Stop the server with Ctrl+C. If ports 5173 or 8788 are already occupied by another copy of this project, stop that copy first.
 
@@ -25,7 +23,7 @@ Open http://localhost:5173 in your browser. Stop the server with Ctrl+C. If port
 - Tracking: `/track`
 - Administration: `/admin`
 
-Local admin sign-in is simulated by the loopback development proxy. The local application database and private uploads live in `.wrangler/state` and survive a restart. This ZIP excludes live application data, uploaded customer documents, local test data, credentials, dependency folders and Git history.
+Local admin sign-in uses the same email/password flow as production, with local-only credentials from `wrangler.jsonc`. The local application database and private uploads live in `.wrangler/state` and survive a restart. This ZIP excludes live application data, uploaded customer documents, local test data, credentials, dependency folders and Git history.
 
 Production uses Cloudflare Workers and D1. Private document storage uses Supabase Storage when configured and falls back to a private R2 `BUCKET` binding. Administration uses a Worker-native email/password gate plus signed 12-hour HttpOnly sessions; `ADMIN_EMAILS` is the administrator allowlist. Password/session secrets and storage/email credentials belong only in hosting-platform secret configuration.
 
@@ -43,7 +41,15 @@ node --import ./scripts/local-env.mjs node_modules/playwright/cli.js install chr
 npm run test:e2e
 ```
 
-Some sandboxed environments block launching Chromium. That occurred during development, and browser acceptance testing remains pending.
+For a self-contained acceptance run with a fresh disposable D1 database and private storage:
+
+```sh
+npm run test:e2e:isolated
+```
+
+This starts the built Worker through a loopback test server, applies every migration, runs desktop/mobile workflows, and removes the test database on shutdown. It never uses production bindings. Screenshots and results are written to ignored `work/qa/`. Set `OYR_BROWSER_EXECUTABLE` only when using an already installed compatible Chromium binary.
+
+Changes belong exclusively on `redesign/luxury-marine-v2`. The approved cinematic hero is locked by `tests/hero.test.mjs`; do not alter its markup, shared stylesheet or media. Main-branch changes and production cutover require owner approval.
 
 ## Project layout
 

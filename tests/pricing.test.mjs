@@ -11,6 +11,7 @@ test('client-approved pricing matrix is authoritative',async()=>{
  assert.equal(c.amountMinor,126300);
 });
 test('renewal and unsupported vessel lengths are rejected',async()=>{
+ await assert.rejects(()=>pricing(env,{serviceId:'new-registration',length:0.5,intendedUse:'PRIVATE',mmsi:'NONE',priority:'STANDARD',delivery:'REGISTERED_MAIL'}));
  await assert.rejects(()=>pricing(env,{serviceId:'registration-renewal',length:8,intendedUse:'PRIVATE',mmsi:'NONE',priority:'STANDARD',delivery:'REGISTERED_MAIL'}));
  await assert.rejects(()=>pricing(env,{serviceId:'new-registration',length:25,intendedUse:'PRIVATE',mmsi:'NONE',priority:'STANDARD',delivery:'REGISTERED_MAIL'}));
 });

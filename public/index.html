@@ -9,6 +9,7 @@
         content="Polish yacht and boat registration with clear pricing, secure document submission and application tracking.">
     <link rel="icon" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="public-ui.css">
 </head>
 
 <body>
@@ -214,9 +215,9 @@
                 </div>
                 <form id="enquiry">
                     <div class="form-top"><h3>Start your application</h3><span>POLAND / EU</span></div>
-                    <div class="field-row"><label>Your name<input required name="name" placeholder="Full name" autocomplete="name"></label><label>Email address<input required name="email" type="email" placeholder="you@example.com" autocomplete="email"></label></div>
+                    <div class="field-row"><label>Your name<input required name="name" maxlength="200" placeholder="Full name" autocomplete="name"></label><label>Email address<input required name="email" maxlength="254" type="email" placeholder="you@example.com" autocomplete="email"></label></div>
                     <div class="field-row"><label>Service<select name="service" id="service"><option value="new-registration">New Polish flag registration</option><option value="ownership-transfer">Change of ownership</option><option value="modification-polish-registration">Modification of Polish registration</option><option value="polish-deletion-certificate">Polish deletion certificate</option><option value="duplicate-polish-registration">Duplicate Polish registration</option></select></label><label>Vessel length (metres)<input name="length" type="number" min="1" max="24" step="0.1" placeholder="e.g. 8.5" required></label></div>
-                    <label>Anything we should know? <span class="optional">(optional)</span><textarea name="message" rows="3" placeholder="Tell us about your vessel or registration situation."></textarea></label>
+                    <label>Anything we should know? <span class="optional">(optional)</span><textarea name="message" maxlength="2000" rows="3" placeholder="Tell us about your vessel or registration situation."></textarea></label>
                     <button class="button blue" type="submit">Continue to registration <span>↗</span></button>
                     <p class="form-disclaimer">Secure five-step application for vessels up to 24 metres.</p><p id="enquiry-error" role="alert"></p>
                 </form>
@@ -226,8 +227,8 @@
         <section class="section wrap faq faq-v3" id="questions">
             <div><p class="eyebrow">FREQUENTLY ASKED QUESTIONS</p><h2>Before you<br><em>begin.</em></h2><p>Quick answers about the services and online application.</p></div>
             <div class="faq-list">
-                <details><summary>Does Ocean Yacht Registration offer a renewal service?<span>+</span></summary><p>No. The current service catalogue does not include registration renewal.</p></details>
-                <details><summary>What vessel lengths can I configure online?<span>+</span></summary><p>The current pricing system supports vessels up to 24 metres, with base tiers for 0–7 m, 7.1–12 m and 12.1–24 m.</p></details>
+                <details><summary>What do I need to start?<span>+</span></summary><p>Have your contact details, vessel information and supporting documents ready. Choose your service and options, then review the total before submitting. No payment is collected with the application.</p></details>
+                <details><summary>What vessel lengths can I configure online?<span>+</span></summary><p>The current pricing system supports vessels up to 24 metres, with base tiers for 1–7 m, 7.1–12 m and 12.1–24 m.</p></details>
                 <details><summary>Can I apply for an ownership change or modification?<span>+</span></summary><p>Yes. Available services include change of ownership, registration modification, deletion certificate and duplicate registration.</p></details>
                 <details><summary>Can I add a Polish MMSI radio licence?<span>+</span></summary><p>Yes. A Polish MMSI radio licence can be selected as an optional add-on in the registration workspace.</p></details>
                 <details><summary>How do I track my application?<span>+</span></summary><p>After submission, use your Ocean application reference together with the application email on the Track Registration page.</p></details>
@@ -241,14 +242,14 @@
         </section>
     </main>
     <div class="floating-contact" aria-label="Quick contact"><a id="floating-email"
-            class="floating-btn floating-btn-email" href="#contact" aria-label="Email Ocean Yacht Registration">
+            class="floating-btn floating-btn-email" hidden href="#contact" aria-label="Email Ocean Yacht Registration">
             <div class="floating-btn-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                     aria-hidden="true">
                     <rect x="2" y="4" width="20" height="16" rx="2.5"></rect>
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </svg></div><span class="floating-btn-label">Email</span>
-        </a><a id="floating-whatsapp" class="floating-btn floating-btn-whatsapp" href="#contact"
+        </a><a id="floating-whatsapp" class="floating-btn floating-btn-whatsapp" hidden href="#contact"
             aria-label="WhatsApp Ocean Yacht Registration">
             <div class="floating-btn-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"
                     aria-hidden="true">
@@ -265,7 +266,7 @@
                     registration ↗</a></div>
         </div>
         <div class="wrap footer-bottom"><span>© <span id="year">2026</span> Ocean Yacht
-                Registration</span><span>Business contact details pending client confirmation.</span><a
+                Registration</span><span id="business-contact" hidden></span><a
                 href="/admin">Administration</a><a href="#top">Back to top ↑</a></div>
     </footer>
     <script src="app.js"></script>

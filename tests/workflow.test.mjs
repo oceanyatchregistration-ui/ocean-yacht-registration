@@ -46,3 +46,62 @@ test('Server validates data, draft versions and upload limits',async()=>{const s
 const f=new FormData();f.set('type','Other supporting document');f.set('file',new File([new Uint8Array(10*1024*1024+1)],'large.pdf',{type:'application/pdf'}));assert.equal((await call('/api/draft/documents',{method:'POST',cookie:s.cookie,body:f})).status,400);
 });
 test('Tracking rate limit applies to unsuccessful attempts',async()=>{let last;for(let i=0;i<22;i++)last=await call('/api/track',{method:'POST',body:{reference:'OYR-INVALID12345',email:'nobody@example.test'},headers:{'cf-connecting-ip':'192.0.2.2'}});assert.equal(last.status,429);});
+
+test('Homepage intake resumes the existing draft and rejects invalid details',async()=>{
+  const enquiry={name:'Intake Test',email:'INTAKE@example.test',serviceId:'ownership-transfer',length:8,message:'Existing vessel owner'};
+  const created=await call('/api/draft',{method:'POST',body:{enquiry}});
+  assert.equal(created.status,201);
+  const cookie=created.headers.get('set-cookie').split(';')[0];
+  assert.equal(created.data.payload.applicant.email,'intake@example.test');
+  const resumed=await call('/api/draft',{method:'POST',cookie,body:{enquiry:{...enquiry,length:12,message:'Updated enquiry'}}});
+  assert.equal(resumed.status,200);
+  assert.equal(resumed.data.resumedExisting,true);
+  assert.equal(resumed.data.payload.package.length,12);
+  assert.equal(resumed.data.payload.enquiry.message,'Updated enquiry');
+  assert.equal(resumed.data.pricing.amountMinor,81500);
+  assert.equal((await call('/api/draft',{method:'POST',cookie,body:{enquiry:{...enquiry,length:25}}})).status,400);
+  assert.equal((await call('/api/draft',{cookie})).data.payload.package.length,12);
+});
+
+test('Review moderation only publishes approved content and requires administrator access',async()=>{
+  const review={name:'Review Test',country:'Test',rating:5,comment:'Review moderation acceptance check'};
+  assert.equal((await call('/api/reviews',{method:'POST',body:review})).status,201);
+  assert.equal((await call('/api/reviews')).data.items.length,0);
+  assert.equal((await call('/api/admin/reviews')).status,401);
+  const list=await call('/api/admin/reviews',{cookie:adminCookie});
+  const id=list.data.items[0].id;
+  assert.equal((await call('/api/admin/reviews/'+id,{method:'PATCH',body:{status:'APPROVED'}})).status,401);
+  assert.equal((await call('/api/admin/reviews/'+id,{method:'PATCH',cookie:adminCookie,body:{status:'APPROVED'}})).status,200);
+  const published=(await call('/api/reviews')).data.items;
+  assert.equal(published.length,1);
+  assert.equal(published[0].comment,review.comment);
+  assert.equal(published[0].id,undefined);
+  assert.equal((await call('/api/admin/reviews/'+id,{method:'PATCH',cookie:adminCookie,body:{status:'REJECTED'}})).status,200);
+  assert.equal((await call('/api/reviews')).data.items.length,0);
+  assert.equal((await call('/api/admin/reviews/'+id,{method:'DELETE',cookie:adminCookie})).status,200);
+});
+
+test('Admin pagination normalizes fractional and unbounded input',async()=>{
+  for(const [page,expected] of [['1.5',1],['-2',1],['Infinity',10000],['abc',1]]){
+    const response=await call('/api/admin/applications?page='+page,{cookie:adminCookie});
+    assert.equal(response.status,200);
+    assert.equal(response.data.page,expected);
+  }
+});
+
+test('Concurrent submission commits once and emits one confirmation per recipient',async()=>{
+  const session=await fill(await draft());
+  const originalFetch=globalThis.fetch;
+  const sent=[];
+  env.RESEND_API_KEY='test-only-provider-key';env.EMAIL_FROM_ADDRESS='test@example.test';
+  try{
+    globalThis.fetch=async(url,options)=>{assert.equal(String(url),'https://api.resend.com/emails');sent.push(JSON.parse(options.body));return new Response('{}',{status:200});};
+    const body={version:session.data.version,consent:true,consentVersion:'oyr-registration-v1'};
+    const responses=await Promise.all([call('/api/draft/submit',{method:'POST',cookie:session.cookie,body}),call('/api/draft/submit',{method:'POST',cookie:session.cookie,body})]);
+    assert.deepEqual(responses.map(r=>r.status).sort(),[200,201]);
+    assert.equal(responses[0].data.reference,responses[1].data.reference);
+    assert.equal(sent.length,2,'One customer confirmation and one admin notification');
+    const row=await env.DB.prepare('SELECT id FROM applications WHERE reference=?').bind(responses[0].data.reference).first();
+    assert.equal((await env.DB.prepare('SELECT count(*) AS n FROM application_status_history WHERE application_id=?').bind(row.id).first()).n,1);
+  }finally{globalThis.fetch=originalFetch;delete env.RESEND_API_KEY;delete env.EMAIL_FROM_ADDRESS;}
+});

@@ -28,8 +28,8 @@
 - Renewal service rejection verified directly.
 - Source scan confirms renewal/legacy flag-change are absent from runtime public/server code.
 
-## Verification still required in a clean/full Node environment
-Dependency installation timed out in the current execution environment and left `node_modules` incomplete, so `npm run build`, Wrangler/D1 integration tests and Playwright browser tests could not be honestly re-run here after the hardening changes. Run the documented commands from a clean checkout before deployment.
+## Historical environment limitation (superseded by QA_REPORT.md)
+During the earlier hardening pass, dependency installation timed out and left `node_modules` incomplete, so `npm run build`, Wrangler/D1 integration tests and Playwright browser tests could not be honestly re-run here after the hardening changes. Run the documented commands from a clean checkout before deployment.
 
 ## Production acceptance still required
 Configure real D1/R2 bindings, admin allowlist, canonical URL and Resend secret/sender identity; deploy to a staging/provider URL; then execute `PRODUCTION.md` live acceptance before DNS cutover.

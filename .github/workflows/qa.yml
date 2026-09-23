@@ -1,0 +1,29 @@
+name: Redesign quality checks
+on:
+  push:
+    branches: [redesign/luxury-marine-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e:isolated
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocean-browser-qa
+          path: work/qa/
+          retention-days: 7

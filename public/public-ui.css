@@ -1,0 +1,10 @@
+.floating-contact [hidden],#business-contact[hidden]{display:none!important}
+#business-contact{overflow-wrap:anywhere}
+/* Constrain the below-hero marine section without altering the cinematic hero. */
+.marine-feature-v3 .marine-grid>*{min-width:0}
+.marine-feature-v3 .marine-facts p{overflow-wrap:anywhere}
+@media(max-width:400px){
+  .marine-feature-v3 .button{width:100%;gap:16px;padding:16px}
+  .marine-feature-v3 .marine-facts>div{grid-template-columns:95px minmax(0,1fr)}
+}
+@media(max-width:400px){.marine-feature-v3 .marine-copy h2{font-size:36px;overflow-wrap:anywhere}}
