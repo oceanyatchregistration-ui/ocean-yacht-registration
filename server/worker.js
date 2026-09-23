@@ -61,7 +61,7 @@ throw new HttpError(404,'Not found.');}
 throw new HttpError(404,'Not found.');}
 if(!['GET','HEAD'].includes(req.method))throw new HttpError(405,'Method not allowed.');
 if(path==='/'||path==='/index.html')return html(home);
-if(['/register','/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path))return html(portal);
+if(['/register','/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path)){const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260923-3');return html(freshPortal);}
 if(path==='/health')return json({ok:true});
 if(env.ASSETS)return env.ASSETS.fetch(req);
 return html('<h1>Page not found</h1>',404);
