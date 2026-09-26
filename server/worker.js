@@ -42,6 +42,13 @@ function canonical(role,root,path='/'){
   return `https://${prefix}${root}${path}`;
 }
 function redirect(location,status=302){return new Response(null,{status,headers:{...security,Location:location,'Cache-Control':'private, no-store'}});}
+function portalShell(body,root){
+  return body
+    .replaceAll('href="/track"',`href="https://track.${root}/"`)
+    .replaceAll('href="/register"',`href="https://register.${root}/"`)
+    .replaceAll('href="/admin"',`href="https://admin.${root}/"`)
+    .replaceAll('href="/"',`href="https://${root}/"`);
+}
 export default {async fetch(req,env,ctx){try{const url=new URL(req.url),path=url.pathname;
 const root=(env.PUBLIC_ROOT_DOMAIN||'oceanyatchregistration.com').toLowerCase(),role=hostRole(url.hostname,env),managed=role!=='other';
 if(managed&&role!=='staging'){
@@ -105,7 +112,7 @@ if(path==='/register'){
   }
   const config={services:await catalogue(env),documentTypes:DOCUMENT_TYPES,consentVersion:CONSENT_VERSION,draft:await draftView(env,app)};
   const bootstrap=encodeURIComponent(JSON.stringify(config));
-  const shell=portal
+  const shell=(managed?portalShell(portal,root):portal)
     .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>',`<main class="wrap portal-wrap" id="portal" data-oyr-bootstrap="${bootstrap}"></main>`)
     .replace('/portal.js"></script>','/portal.js?v=20260926-main-registration"></script>');
   return new Response(shell,{headers:{...security,'Content-Type':'text/html;charset=utf-8','Cache-Control':'private, no-store',...(setCookie?{'Set-Cookie':setCookie}:{})}});
