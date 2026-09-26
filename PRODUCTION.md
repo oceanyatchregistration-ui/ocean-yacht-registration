@@ -41,7 +41,7 @@ Do not call the service production-ready until all of the following pass against
 1. Open the public site over HTTPS.
 2. Complete the five-step registration using a real test mailbox.
 3. Upload a harmless PDF and confirm it is not publicly addressable.
-4. Submit and receive the configured customer application reference. Before final release, confirm the client's requested short `C…PL` format and update the generator/routes/tests together; do not deploy an assumed format.
+4. Submit and receive the short customer tracking reference in the client-approved `C…PL` format (for example `C990PL`). Existing legacy `OYR-…` references remain readable for backward compatibility.
 5. Receive the customer confirmation email and administrator alert.
 6. Sign in as an allowlisted administrator and find the application.
 7. Download the private test document from the authenticated admin route.
