@@ -20,8 +20,6 @@
   ],
 
   "routes": [
-    { "pattern": "oceanyatchregistration.com", "custom_domain": true },
-    { "pattern": "www.oceanyatchregistration.com", "custom_domain": true },
     { "pattern": "register.oceanyatchregistration.com", "custom_domain": true },
     { "pattern": "track.oceanyatchregistration.com", "custom_domain": true },
     { "pattern": "admin.oceanyatchregistration.com", "custom_domain": true }
