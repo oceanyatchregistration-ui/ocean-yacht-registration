@@ -255,3 +255,15 @@ header .brand-name{font-size:clamp(16px,1.55vw,22px);font-weight:650;letter-spac
   .brandmark-yacht{width:34px;height:22px;margin-right:6px}
   header .brand-name{font-size:13px}
 }
+
+/* Compact production review experience */
+.testimonials{padding-top:72px;padding-bottom:72px}
+.testimonials .section-heading{margin-bottom:24px}
+.review-empty{border:1px solid var(--line);padding:22px 24px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.review-empty span{color:var(--blue);letter-spacing:4px;font-size:12px;white-space:nowrap}
+.review-empty p{margin:0;color:#5277a8;font-size:13px}
+.review-submit{margin-top:14px;border:1px solid var(--line);background:#fff}
+.review-submit summary{padding:16px 20px;font-size:12px;font-weight:650;color:var(--blue);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.review-submit[open] summary{border-bottom:1px solid var(--line)}
+.review-submit form{padding:22px;max-width:720px}
+@media(max-width:700px){.testimonials{padding-top:52px;padding-bottom:52px}.review-empty{align-items:flex-start;flex-direction:column;gap:9px;padding:18px}.review-submit form{padding:18px}}
