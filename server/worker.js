@@ -61,7 +61,25 @@ throw new HttpError(404,'Not found.');}
 throw new HttpError(404,'Not found.');}
 if(!['GET','HEAD'].includes(req.method))throw new HttpError(405,'Method not allowed.');
 if(path==='/'||path==='/index.html')return html(home);
-if(['/register','/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path))return html(portal);
+if(path==='/register'){
+  let app=await currentDraft(req,env,false),setCookie='';
+  if(!app){
+    const token=randomToken(),appId=id(),time=now();
+    await db(env).batch([
+      stmt(env,`INSERT INTO applications(id,reference,status,draft_payload,created_at,updated_at) VALUES(?,?,'DRAFT',?,?,?)`,appId,reference(),'{}',time,time),
+      stmt(env,'INSERT INTO draft_sessions(token_hash,application_id,expires_at) VALUES(?,?,?)',await hash(token),appId,new Date(Date.now()+7*86400000).toISOString())
+    ]);
+    app=await currentById(env,appId);
+    setCookie=`oyr_draft=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800${url.protocol==='https:'?'; Secure':''}`;
+  }
+  const config={services:await catalogue(env),documentTypes:DOCUMENT_TYPES,consentVersion:CONSENT_VERSION,draft:await draftView(env,app)};
+  const bootstrap=encodeURIComponent(JSON.stringify(config));
+  const shell=portal
+    .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>',`<main class="wrap portal-wrap" id="portal" data-oyr-bootstrap="${bootstrap}"></main>`)
+    .replace('/portal.js"></script>','/portal.js?v=20260926-main-registration"></script>');
+  return new Response(shell,{headers:{...security,'Content-Type':'text/html;charset=utf-8','Cache-Control':'private, no-store',...(setCookie?{'Set-Cookie':setCookie}:{})}});
+}
+if(['/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path))return html(portal);
 if(path==='/health')return json({ok:true});
 if(env.ASSETS)return env.ASSETS.fetch(req);
 return html('<h1>Page not found</h1>',404);
