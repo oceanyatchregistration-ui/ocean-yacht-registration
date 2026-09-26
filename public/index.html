@@ -201,16 +201,16 @@
             <details class="review-submit">
                 <summary>Share your experience <span>+</span></summary>
                 <form id="review-form">
-                    <div class="field-row"><label>Your name<input name="name" maxlength="80"
+                    <div class="field-row"><label>Your name<input name="name" maxlength="60" autocomplete="name"
                                 required></label><label>Country <span class="optional">(optional)</span><input
-                                name="country" maxlength="80"></label></div><label>Rating<select name="rating" required>
+                                name="country" maxlength="50" autocomplete="country-name"></label></div><label>Rating<select name="rating" required>
                             <option value="">Choose rating</option>
                             <option value="5">5 — Excellent</option>
                             <option value="4">4 — Very good</option>
                             <option value="3">3 — Good</option>
                             <option value="2">2 — Fair</option>
                             <option value="1">1 — Poor</option>
-                        </select></label><label>Your review<textarea name="comment" maxlength="800" rows="4"
+                        </select></label><label>Your review<textarea name="comment" maxlength="500" minlength="10" rows="3"
                             required></textarea></label><button class="button blue" type="submit">Submit for review
                         <span>↗</span></button>
                     <p id="review-message" class="form-disclaimer" role="status"></p>
