@@ -37,4 +37,8 @@ export async function hash(s){return [...new Uint8Array(await crypto.subtle.dige
 export const id=()=>crypto.randomUUID();
 export const now=()=>new Date().toISOString();
 export function randomToken(){return [...crypto.getRandomValues(new Uint8Array(32))].map(x=>x.toString(16).padStart(2,'0')).join('');}
-export function reference(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return 'OYR-'+[...crypto.getRandomValues(new Uint8Array(12))].map(b=>chars[b%32]).join('');}
+export async function reference(env){
+ const row=await stmt(env,`UPDATE reference_sequences SET next_value=next_value+1 WHERE name='customer_tracking' RETURNING next_value-1 AS value`).first();
+ if(!row||!Number.isInteger(row.value)||row.value<990||row.value>9999)throw new HttpError(503,'A tracking reference could not be generated. Please try again.');
+ return `C${row.value}PL`;
+}
