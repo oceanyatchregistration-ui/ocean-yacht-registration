@@ -13,103 +13,123 @@ async function loadPublicContact(){try{const r=await fetch('/api/public-config')
 loadPublicContact();
 
 
-/* Cinematic hero playlist: buffered dual-video crossfade with cold-load protection. */
+/* Cinematic hero playlist: deterministic dual-layer loop with seamless preloading. */
 (function initHeroPlaylist(){
   const layers=[document.querySelector('.hero-video-a'),document.querySelector('.hero-video-b')];
   if(layers.some(v=>!v))return;
+
   const playlist=[
     '/media/hero-yacht-01.mp4',
     '/media/hero-yacht-02.mp4',
     '/media/hero-yacht-03.mp4'
   ];
-  const fallback='/media/ocean-yacht-hero.mp4';
-  const CROSSFADE_MS=1100;
-  const LEAD_SECONDS=3;
-  let active=0,index=0,transitioning=false;
+  const CROSSFADE_MS=900;
+  const TRANSITION_LEAD=2.25;
+  let active=0;
+  let index=0;
+  let transitioning=false;
 
-  const load=(video,src)=>{
-    if(video.dataset.src===src)return;
-    video.dataset.src=src;
+  function setSource(video,src){
+    if(video.dataset.playlistSrc===src)return;
+    video.dataset.playlistSrc=src;
     video.preload='auto';
     video.src=src;
     video.load();
-  };
-  const nextSrc=()=>playlist[(index+1)%playlist.length];
-  const prime=()=>load(layers[1-active],nextSrc());
+  }
 
-  const waitUntilPlayable=video=>new Promise((resolve,reject)=>{
-    if(video.readyState>=4)return resolve();
-    let settled=false;
-    const finish=ok=>{
-      if(settled)return;
-      settled=true;
-      cleanup();
-      ok?resolve():reject();
-    };
-    const ready=()=>finish(true);
-    const bad=()=>finish(false);
-    const cleanup=()=>{
-      video.removeEventListener('canplaythrough',ready);
-      video.removeEventListener('error',bad);
-      clearTimeout(timer);
-    };
-    video.addEventListener('canplaythrough',ready,{once:true});
-    video.addEventListener('error',bad,{once:true});
-    const timer=setTimeout(()=>finish(video.readyState>=3),5000);
-  });
+  function preloadNext(){
+    const next=layers[1-active];
+    setSource(next,playlist[(index+1)%playlist.length]);
+  }
 
-  layers.forEach(video=>{
-    video.preload='auto';
-    video.addEventListener('error',()=>{
-      if(video.dataset.src!==fallback){
-        load(video,fallback);
-        video.play().catch(()=>{});
-      }
+  function ready(video){
+    if(video.readyState>=3)return Promise.resolve();
+    return new Promise((resolve,reject)=>{
+      let done=false;
+      const finish=ok=>{
+        if(done)return;
+        done=true;
+        cleanup();
+        ok?resolve():reject(new Error('Hero video failed to buffer'));
+      };
+      const cleanup=()=>{
+        video.removeEventListener('canplay',onReady);
+        video.removeEventListener('playing',onReady);
+        video.removeEventListener('error',onError);
+        clearTimeout(timer);
+      };
+      const onReady=()=>finish(true);
+      const onError=()=>finish(false);
+      video.addEventListener('canplay',onReady,{once:true});
+      video.addEventListener('playing',onReady,{once:true});
+      video.addEventListener('error',onError,{once:true});
+      const timer=setTimeout(()=>finish(video.readyState>=2),8000);
     });
-  });
+  }
 
   async function advance(){
     if(transitioning)return;
     transitioning=true;
-    const from=layers[active],to=layers[1-active];
-    const target=nextSrc();
-    load(to,target);
+
+    const from=layers[active];
+    const nextLayer=1-active;
+    const to=layers[nextLayer];
+    const nextIndex=(index+1)%playlist.length;
+
+    setSource(to,playlist[nextIndex]);
+
     try{
-      await waitUntilPlayable(to);
+      await ready(to);
       to.currentTime=0;
       await to.play();
 
-      /* Do not fade away from the current clip until the incoming frame is rendering. */
-      if(to.readyState<2)throw new Error('Incoming hero video has no rendered frame');
+      /* Wait for actual playback before exposing the incoming layer. */
+      if(to.paused)throw new Error('Incoming hero video did not start');
       to.classList.add('is-active');
       from.classList.remove('is-active');
 
-      setTimeout(()=>{
+      window.setTimeout(()=>{
         from.pause();
         from.currentTime=0;
-        active=1-active;
-        index=(index+1)%playlist.length;
+        active=nextLayer;
+        index=nextIndex;
         transitioning=false;
-        prime();
+        preloadNext();
       },CROSSFADE_MS);
     }catch{
       transitioning=false;
-      load(to,fallback);
+      /* Keep the current layer moving if the incoming clip cannot start yet. */
+      if(from.paused&&!from.ended)from.play().catch(()=>{});
     }
   }
 
-  layers.forEach(video=>video.addEventListener('timeupdate',()=>{
-    if(video!==layers[active]||transitioning||!Number.isFinite(video.duration))return;
-    if(video.duration-video.currentTime<=LEAD_SECONDS)advance();
-  }));
+  layers.forEach(video=>{
+    video.muted=true;
+    video.playsInline=true;
+    video.preload='auto';
 
-  /* ended is only an emergency fallback; normal transitions happen while footage is still moving. */
-  layers.forEach(video=>video.addEventListener('ended',()=>{
-    if(video===layers[active]&&!transitioning)advance();
-  }));
+    video.addEventListener('timeupdate',()=>{
+      if(video!==layers[active]||transitioning||!Number.isFinite(video.duration)||video.duration<=0)return;
+      if(video.duration-video.currentTime<=TRANSITION_LEAD)advance();
+    });
 
+    video.addEventListener('ended',()=>{
+      if(video===layers[active])advance();
+    });
+
+    video.addEventListener('stalled',()=>{
+      if(video===layers[active]&&video.paused&&!video.ended)video.play().catch(()=>{});
+    });
+  });
+
+  /* Own the initial source as well; do not mix HTML <source> state with JS playlist state. */
   const first=layers[0];
-  first.preload='auto';
-  first.play().catch(()=>{});
-  prime();
+  setSource(first,playlist[0]);
+  first.classList.add('is-active');
+  layers[1].classList.remove('is-active');
+
+  ready(first)
+    .then(()=>first.play())
+    .then(preloadNext)
+    .catch(()=>{ preloadNext(); });
 })();
