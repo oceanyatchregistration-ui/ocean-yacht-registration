@@ -13,123 +13,93 @@ async function loadPublicContact(){try{const r=await fetch('/api/public-config')
 loadPublicContact();
 
 
-/* Cinematic hero playlist: deterministic dual-layer loop with seamless preloading. */
+/* Hero playlist: robust single-player sequencing. */
 (function initHeroPlaylist(){
-  const layers=[document.querySelector('.hero-video-a'),document.querySelector('.hero-video-b')];
-  if(layers.some(v=>!v))return;
+  const primary=document.querySelector('.hero-video-a');
+  const secondary=document.querySelector('.hero-video-b');
+  if(!primary)return;
 
   const playlist=[
     '/media/hero-yacht-01.mp4',
     '/media/hero-yacht-02.mp4',
     '/media/hero-yacht-03.mp4'
   ];
-  const CROSSFADE_MS=900;
-  const TRANSITION_LEAD=2.25;
-  let active=0;
   let index=0;
-  let transitioning=false;
+  let switching=false;
 
-  function setSource(video,src){
-    if(video.dataset.playlistSrc===src)return;
-    video.dataset.playlistSrc=src;
-    video.preload='auto';
-    video.src=src;
-    video.load();
+  /* The second layer is intentionally retired: one media element avoids decoder/state
+     races on cold loads while preserving the approved hero composition. */
+  if(secondary){
+    secondary.pause();
+    secondary.removeAttribute('src');
+    secondary.load();
+    secondary.classList.remove('is-active');
+    secondary.hidden=true;
   }
 
-  function preloadNext(){
-    const next=layers[1-active];
-    setSource(next,playlist[(index+1)%playlist.length]);
-  }
+  primary.muted=true;
+  primary.playsInline=true;
+  primary.preload='auto';
+  primary.classList.add('is-active');
 
-  function ready(video){
-    if(video.readyState>=3)return Promise.resolve();
-    return new Promise((resolve,reject)=>{
-      let done=false;
-      const finish=ok=>{
-        if(done)return;
-        done=true;
-        cleanup();
-        ok?resolve():reject(new Error('Hero video failed to buffer'));
-      };
-      const cleanup=()=>{
-        video.removeEventListener('canplay',onReady);
-        video.removeEventListener('playing',onReady);
-        video.removeEventListener('error',onError);
-        clearTimeout(timer);
-      };
-      const onReady=()=>finish(true);
-      const onError=()=>finish(false);
-      video.addEventListener('canplay',onReady,{once:true});
-      video.addEventListener('playing',onReady,{once:true});
-      video.addEventListener('error',onError,{once:true});
-      const timer=setTimeout(()=>finish(video.readyState>=2),8000);
-    });
-  }
+  function sourceAt(i){return playlist[i%playlist.length]}
 
-  async function advance(){
-    if(transitioning)return;
-    transitioning=true;
+  function playIndex(i){
+    if(switching)return;
+    switching=true;
+    index=(i+playlist.length)%playlist.length;
+    const src=sourceAt(index);
 
-    const from=layers[active];
-    const nextLayer=1-active;
-    const to=layers[nextLayer];
-    const nextIndex=(index+1)%playlist.length;
+    if(primary.dataset.playlistSrc!==src){
+      primary.dataset.playlistSrc=src;
+      primary.src=src;
+      primary.load();
+    }
 
-    setSource(to,playlist[nextIndex]);
+    const start=()=>{
+      primary.removeEventListener('canplay',start);
+      primary.play()
+        .catch(()=>{})
+        .finally(()=>{switching=false});
+    };
 
-    try{
-      await ready(to);
-      to.currentTime=0;
-      await to.play();
-
-      /* Wait for actual playback before exposing the incoming layer. */
-      if(to.paused)throw new Error('Incoming hero video did not start');
-      to.classList.add('is-active');
-      from.classList.remove('is-active');
-
+    if(primary.readyState>=3)start();
+    else{
+      primary.addEventListener('canplay',start,{once:true});
+      /* Never leave the playlist permanently locked if a browser delays canplay. */
       window.setTimeout(()=>{
-        from.pause();
-        from.currentTime=0;
-        active=nextLayer;
-        index=nextIndex;
-        transitioning=false;
-        preloadNext();
-      },CROSSFADE_MS);
-    }catch{
-      transitioning=false;
-      /* Keep the current layer moving if the incoming clip cannot start yet. */
-      if(from.paused&&!from.ended)from.play().catch(()=>{});
+        if(!switching)return;
+        primary.removeEventListener('canplay',start);
+        primary.play().catch(()=>{}).finally(()=>{switching=false});
+      },2500);
     }
   }
 
-  layers.forEach(video=>{
-    video.muted=true;
-    video.playsInline=true;
-    video.preload='auto';
+  primary.addEventListener('ended',()=>playIndex(index+1));
 
-    video.addEventListener('timeupdate',()=>{
-      if(video!==layers[active]||transitioning||!Number.isFinite(video.duration)||video.duration<=0)return;
-      if(video.duration-video.currentTime<=TRANSITION_LEAD)advance();
-    });
-
-    video.addEventListener('ended',()=>{
-      if(video===layers[active])advance();
-    });
-
-    video.addEventListener('stalled',()=>{
-      if(video===layers[active]&&video.paused&&!video.ended)video.play().catch(()=>{});
-    });
+  /* If network buffering stalls, resume the same clip rather than changing layers. */
+  primary.addEventListener('stalled',()=>{
+    if(primary.paused&&!primary.ended)primary.play().catch(()=>{});
   });
 
-  /* Own the initial source as well; do not mix HTML <source> state with JS playlist state. */
-  const first=layers[0];
-  setSource(first,playlist[0]);
-  first.classList.add('is-active');
-  layers[1].classList.remove('is-active');
+  primary.addEventListener('error',()=>{
+    switching=false;
+    window.setTimeout(()=>playIndex(index+1),150);
+  });
 
-  ready(first)
-    .then(()=>first.play())
-    .then(preloadNext)
-    .catch(()=>{ preloadNext(); });
+  /* Warm the browser cache for the next two clips without creating competing decoders. */
+  playlist.slice(1).forEach(src=>{
+    const link=document.createElement('link');
+    link.rel='preload';
+    link.as='video';
+    link.href=src;
+    document.head.appendChild(link);
+  });
+
+  primary.dataset.playlistSrc=playlist[0];
+  if(primary.currentSrc&&!primary.currentSrc.endsWith(playlist[0])){
+    primary.src=playlist[0];
+    primary.load();
+  }
+  primary.play().catch(()=>{});
 })();
