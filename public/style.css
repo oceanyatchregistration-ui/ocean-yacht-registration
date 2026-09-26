@@ -346,3 +346,55 @@ footer .brand-name{
   footer .brandmark-yacht{width:34px;height:22px;margin-right:6px}
   footer .brand-name{font-size:13px}
 }
+
+
+/* Production hero typography — professional headline rhythm */
+.hero-v2 h1{
+  max-width:960px;
+  margin:0 0 30px;
+  font-size:clamp(62px,6.6vw,104px);
+  line-height:1.01;
+  letter-spacing:-4.4px;
+}
+.hero-v2 h1 em{
+  display:inline-block;
+  margin-top:.1em;
+  line-height:1.04;
+  letter-spacing:-3.2px;
+}
+.hero-v2 .hero-meta{margin-bottom:24px}
+.hero-v2 .intro{
+  max-width:590px;
+  margin-bottom:34px;
+}
+@media(max-width:1050px){
+  .hero-v2 h1{
+    font-size:clamp(58px,7.5vw,80px);
+    line-height:1.02;
+    letter-spacing:-3.6px;
+  }
+  .hero-v2 h1 em{letter-spacing:-2.7px}
+}
+@media(max-width:700px){
+  .hero-v2 h1{
+    max-width:560px;
+    font-size:clamp(46px,13.2vw,62px);
+    line-height:1.02;
+    letter-spacing:-2.7px;
+    margin-bottom:22px;
+  }
+  .hero-v2 h1 em{
+    margin-top:.12em;
+    line-height:1.06;
+    letter-spacing:-2px;
+  }
+  .hero-v2 .hero-meta{margin-bottom:18px}
+  .hero-v2 .intro{margin-bottom:26px}
+}
+@media(max-width:390px){
+  .hero-v2 h1{
+    font-size:clamp(42px,12.5vw,49px);
+    letter-spacing:-2.2px;
+  }
+  .hero-v2 h1 em{letter-spacing:-1.7px}
+}
