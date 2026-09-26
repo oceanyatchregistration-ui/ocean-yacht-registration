@@ -575,3 +575,53 @@ footer .brand-name{
   #services .card-number{margin-bottom:30px}
   #services .service-card h3{font-size:22px}
 }
+
+
+/* Marine live-photo frame — preserve cinematic yacht composition */
+.marine-feature .marine-grid{
+  grid-template-columns:minmax(0,1.16fr) minmax(360px,.84fr);
+  gap:clamp(56px,6vw,88px);
+}
+.marine-feature .marine-image{
+  width:100%;
+  height:auto;
+  aspect-ratio:16/10;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+  background:#dbe7f0;
+}
+.marine-feature .marine-image video,
+.marine-feature .marine-image img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:50% 50%;
+}
+.marine-feature .marine-image video{
+  filter:saturate(.88) contrast(1.02);
+}
+.marine-feature .marine-image::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,25,44,0) 58%,rgba(4,25,44,.28) 100%);
+}
+.marine-feature .marine-image span{
+  z-index:1;
+}
+@media(max-width:1000px){
+  .marine-feature .marine-grid{
+    grid-template-columns:1fr 1fr;
+    gap:42px;
+  }
+  .marine-feature .marine-image{aspect-ratio:4/3}
+}
+@media(max-width:700px){
+  .marine-feature .marine-grid{grid-template-columns:1fr;gap:38px}
+  .marine-feature .marine-image{aspect-ratio:16/10}
+  .marine-feature .marine-image video,
+  .marine-feature .marine-image img{object-position:center}
+}
