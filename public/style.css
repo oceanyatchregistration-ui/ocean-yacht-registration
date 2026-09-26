@@ -322,3 +322,27 @@ header .brand-name{font-size:clamp(16px,1.55vw,22px);font-weight:650;letter-spac
 }
 
 
+
+
+/* Shared approved brand identity across header and footer */
+footer .brandmark-yacht{width:48px;height:30px;margin-right:12px}
+footer .brand-name{
+  display:inline-block;
+  flex-direction:row;
+  font-family:'Manrope',sans-serif;
+  font-size:clamp(16px,1.55vw,22px);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:-.65px;
+  text-transform:none;
+  white-space:nowrap;
+}
+.portal .footer-brand{font-size:inherit}
+@media(max-width:700px){
+  footer .brandmark-yacht{width:39px;height:25px;margin-right:8px}
+  footer .brand-name{font-size:15px;letter-spacing:-.45px}
+}
+@media(max-width:390px){
+  footer .brandmark-yacht{width:34px;height:22px;margin-right:6px}
+  footer .brand-name{font-size:13px}
+}
