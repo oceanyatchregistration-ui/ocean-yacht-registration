@@ -398,3 +398,40 @@ footer .brand-name{
   }
   .hero-v2 h1 em{letter-spacing:-1.7px}
 }
+
+
+/* Hero headline collision + top-space correction */
+.hero-v2 .hero-shell{
+  align-items:start;
+  padding-top:clamp(112px,13vh,138px);
+}
+.hero-v2 .hero-copy{
+  align-self:start;
+  padding-top:clamp(18px,3vh,34px);
+}
+.hero-v2 h1{
+  line-height:.96;
+}
+.hero-v2 h1 em{
+  display:block;
+  margin-top:.24em;
+  line-height:1.08;
+}
+@media(max-width:1050px){
+  .hero-v2 .hero-shell{padding-top:clamp(104px,12vh,126px)}
+  .hero-v2 .hero-copy{padding-top:clamp(14px,2vh,24px)}
+  .hero-v2 h1 em{margin-top:.22em}
+}
+@media(max-width:700px){
+  .hero-v2 .hero-shell{
+    justify-content:flex-start;
+    padding-top:92px;
+  }
+  .hero-v2 .hero-copy{padding-top:28px}
+  .hero-v2 h1{line-height:.98}
+  .hero-v2 h1 em{margin-top:.2em;line-height:1.08}
+}
+@media(max-width:390px){
+  .hero-v2 .hero-shell{padding-top:84px}
+  .hero-v2 .hero-copy{padding-top:24px}
+}
