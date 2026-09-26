@@ -49,6 +49,46 @@ function portalShell(body,root){
     .replaceAll('href="/admin"',`href="https://admin.${root}/"`)
     .replaceAll('href="/"',`href="https://${root}/"`);
 }
+async function mediaAsset(req,env){
+  const range=req.headers.get('range');
+  if(!range)return env.ASSETS.fetch(req);
+
+  /* Static Assets currently returns a full 200 for our MP4 Range requests.
+     Fetch the complete immutable asset internally, then return the exact byte
+     interval browsers expect for progressive video playback. */
+  const headers=new Headers(req.headers);
+  headers.delete('range');
+  headers.delete('if-range');
+  const full=await env.ASSETS.fetch(new Request(req.url,{method:'GET',headers}));
+  if(!full.ok)return full;
+
+  const bytes=await full.arrayBuffer();
+  const size=bytes.byteLength;
+  const match=/^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  if(!match)return new Response(null,{status:416,headers:{'Content-Range':`bytes */${size}`,'Accept-Ranges':'bytes'}});
+
+  let start,end;
+  if(match[1]===''){
+    const suffix=Number(match[2]);
+    if(!Number.isSafeInteger(suffix)||suffix<=0)return new Response(null,{status:416,headers:{'Content-Range':`bytes */${size}`,'Accept-Ranges':'bytes'}});
+    start=Math.max(0,size-suffix);
+    end=size-1;
+  }else{
+    start=Number(match[1]);
+    end=match[2]===''?size-1:Number(match[2]);
+    if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||start>=size||end<start)return new Response(null,{status:416,headers:{'Content-Range':`bytes */${size}`,'Accept-Ranges':'bytes'}});
+    end=Math.min(end,size-1);
+  }
+
+  const outHeaders=new Headers(full.headers);
+  outHeaders.set('Content-Type','video/mp4');
+  outHeaders.set('Accept-Ranges','bytes');
+  outHeaders.set('Content-Range',`bytes ${start}-${end}/${size}`);
+  outHeaders.set('Content-Length',String(end-start+1));
+  outHeaders.set('Cache-Control','public, max-age=31536000, immutable');
+  outHeaders.delete('Content-Encoding');
+  return new Response(bytes.slice(start,end+1),{status:206,headers:outHeaders});
+}
 export default {async fetch(req,env,ctx){try{const url=new URL(req.url),path=url.pathname;
 const root=(env.PUBLIC_ROOT_DOMAIN||'oceanyatchregistration.com').toLowerCase(),role=hostRole(url.hostname,env),managed=role!=='other';
 if(managed&&role!=='staging'){
@@ -119,7 +159,7 @@ if(path==='/register'){
 }
 if(['/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path))return html(portal);
 if(path==='/health')return json({ok:true});
-if(env.ASSETS)return env.ASSETS.fetch(req);
+if(env.ASSETS){if(/^\/media\/.*\.mp4$/i.test(routedPath))return mediaAsset(req,env);return env.ASSETS.fetch(req);}
 return html('<h1>Page not found</h1>',404);
 }catch(e){if(!(e instanceof HttpError))console.error('OYR request failed',{path:new URL(req.url).pathname,error:e?.message});return json({error:e instanceof HttpError?e.message:'The service is temporarily unavailable. Your form has not been cleared. Please try again.'},e instanceof HttpError?e.status:503);}}};
 async function currentById(env,appId){return stmt(env,'SELECT * FROM applications WHERE id=?',appId).first();}
