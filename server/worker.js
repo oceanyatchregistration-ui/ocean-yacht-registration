@@ -93,18 +93,30 @@ throw new HttpError(404,'Not found.');}
 if(!['GET','HEAD'].includes(req.method))throw new HttpError(405,'Method not allowed.');
 if(path==='/'||path==='/index.html')return html(home);
 if(path==='/register'){
+  let app=await currentDraft(req,env,false),setCookie='';
+  if(!app){
+    const token=randomToken(),appId=id(),time=now();
+    await db(env).batch([
+      stmt(env,`INSERT INTO applications(id,reference,status,draft_payload,created_at,updated_at) VALUES(?,?,'DRAFT',?,?,?)`,appId,await reference(env),'{}',time,time),
+      stmt(env,'INSERT INTO draft_sessions(token_hash,application_id,expires_at) VALUES(?,?,?)',await hash(token),appId,new Date(Date.now()+7*86400000).toISOString())
+    ]);
+    app=await currentById(env,appId);
+    setCookie=`oyr_draft=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800${url.protocol==='https:'?'; Secure':''}`;
+  }
+  const config={services:await catalogue(env),documentTypes:DOCUMENT_TYPES,consentVersion:CONSENT_VERSION,draft:await draftView(env,app)};
+  const boot=`<script>window.__OYR_BOOTSTRAP__=${JSON.stringify(config).replace(/</g,'\\u003c')}</script>`;
   const shell=portal
-    .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>','<main class="wrap portal-wrap" id="portal"><div class="portal-heading"><div><p class="eyebrow">START YOUR REGISTRATION</p><h1>Your next chapter.</h1><p>A clear path from your first details to your application.</p></div></div><section class="panel registration-load-error" role="status"><h2>Opening registration</h2><p>If the form does not appear automatically, use the retry button below.</p><div class="actions"><button class="button blue" type="button" onclick="location.reload()">Retry <span>↻</span></button><a class="text-button" href="/track">Track an application ↗</a></div></section></main>')
-    .replace('/portal.js?v=20260923-2','/portal.js?v=20260926-3');
-  return html(shell);
+    .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>','<main class="wrap portal-wrap" id="portal"><div class="portal-heading"><div><p class="eyebrow">START YOUR REGISTRATION</p><h1>Your next chapter.</h1><p>Five considered steps. One clear course.</p></div></div><section class="panel"><h2>Package</h2><p>Select your registration service and vessel details below.</p></section></main>')
+    .replace('<script type="module" src="/portal.js?v=20260923-2"></script>',boot+'<script type="module" src="/portal.js?v=20260926-4"></script>');
+  return new Response(shell,{headers:{...security,'Content-Type':'text/html;charset=utf-8','Cache-Control':'private, no-store',...(setCookie?{'Set-Cookie':setCookie}:{})}});
 }
 if(path==='/admin'||path==='/admin/login'){
   const adminShell=portal
     .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>','<main class="wrap portal-wrap" id="portal"><section class="panel login-panel"><div class="portal-heading"><div><p class="eyebrow">OCEAN ADMINISTRATION</p><h1>Welcome back.</h1><p>Use an authorised Google account to access administration.</p></div></div><a class="button blue google-admin-login" href="/api/auth/google">Continue with Google <span>↗</span></a><p class="subtle">Only authorised Ocean team accounts can enter.</p></section></main>')
-    .replace('/portal.js?v=20260923-2','/portal.js?v=20260926-3');
+    .replace('/portal.js?v=20260923-2','/portal.js?v=20260926-4');
   return html(adminShell);
 }
-if(['/track'].includes(path)||/^\/admin\/applications\/(?:OYR-[A-Z2-9]{12}|C[0-9]{3,4}PL)$/.test(path)){const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260926-3');return html(freshPortal);}
+if(['/track'].includes(path)||/^\/admin\/applications\/(?:OYR-[A-Z2-9]{12}|C[0-9]{3,4}PL)$/.test(path)){const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260926-4');return html(freshPortal);}
 if(path==='/health')return json({ok:true});
 if(env.ASSETS)return env.ASSETS.fetch(req);
 return html('<h1>Page not found</h1>',404);
