@@ -8,7 +8,8 @@ export const SERVICE_CONFIG=[
 {id:'ownership-transfer',name:'Change of ownership'},
 {id:'modification-polish-registration',name:'Modification of Polish registration'},
 {id:'polish-deletion-certificate',name:'Polish deletion certificate'},
-{id:'duplicate-polish-registration',name:'Duplicate Polish registration'}
+{id:'duplicate-polish-registration',name:'Duplicate Polish registration'},
+{id:'extract-polish-register',name:'Extract from Polish Register'}
 ];
 export function object(v){if(!v||typeof v!=='object'||Array.isArray(v))throw new HttpError(400,'Please provide valid form data.');return v;}
 export function string(v,label,max=200,required=true){if(typeof v!=='string'){if(!required&&(v==null))return '';throw new HttpError(400,`${label} is required.`);}const s=v.trim();if((required&&!s)||s.length>max||/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(s))throw new HttpError(400,`Please check ${label.toLowerCase()}.`);return s;}
