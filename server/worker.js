@@ -89,10 +89,16 @@ if(path==='/'||path==='/index.html')return html(home);
 if(path==='/register'){
   const shell=portal
     .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>','<main class="wrap portal-wrap" id="portal"><div class="portal-heading"><div><p class="eyebrow">START YOUR REGISTRATION</p><h1>Your next chapter.</h1><p>A clear path from your first details to your application.</p></div></div><section class="panel"><h2>Package</h2><p class="subtle">Preparing your secure registration workspace…</p><div class="actions"><a class="button blue" href="/register?start=1">Start registration <span>→</span></a><a class="text-button" href="/track">Track an application ↗</a></div></section></main>')
-    .replace('/portal.js?v=20260923-2','/portal.js?v=20260923-5');
+    .replace('/portal.js?v=20260923-2','/portal.js?v=20260926-1');
   return html(shell);
 }
-if(['/register','/track','/admin','/admin/login'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path)){const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260923-4');return html(freshPortal);}
+if(path==='/admin'||path==='/admin/login'){
+  const adminShell=portal
+    .replace('<main class="wrap portal-wrap" id="portal"><p role="status">Loading your registration workspace…</p></main>','<main class="wrap portal-wrap" id="portal"><section class="panel login-panel"><div class="portal-heading"><div><p class="eyebrow">OCEAN ADMINISTRATION</p><h1>Welcome back.</h1><p>Use an authorised Google account to access administration.</p></div></div><a class="button blue google-admin-login" href="/api/auth/google">Continue with Google <span>↗</span></a><p class="subtle">Only authorised Ocean team accounts can enter.</p></section></main>')
+    .replace('/portal.js?v=20260923-2','/portal.js?v=20260926-1');
+  return html(adminShell);
+}
+if(['/track'].includes(path)||/^\/admin\/applications\/OYR-[A-Z2-9]{12}$/.test(path)){const freshPortal=portal.replace('/portal.js?v=20260923-2','/portal.js?v=20260926-1');return html(freshPortal);}
 if(path==='/health')return json({ok:true});
 if(env.ASSETS)return env.ASSETS.fetch(req);
 return html('<h1>Page not found</h1>',404);
