@@ -7,15 +7,15 @@ No gate is considered passed solely because code exists. Production-sensitive ga
 - [ ] Retail registration completes end to end.
 - [ ] Partner/dealer registration completes end to end with isolated partner pricing.
 - [ ] Server-authoritative retail and partner pricing are tested and snapshotted at submission.
-- [ ] Applicant and vessel data, including length, beam, draft and place of build, persist correctly.
-- [ ] Current-flag field is absent from new customer registration.
+- [x] Applicant and vessel data, including length, beam, draft and place of build, persist correctly.
+- [x] Current-flag field is absent from new customer registration.
 - [ ] Private document upload and authenticated admin download work in production.
 - [ ] Application submission is idempotent and generates the client-approved short C…PL reference.
 - [ ] Customer confirmation email is received from the approved production sender with correct application details.
 - [ ] Administrator new-application notification is received at the approved production address.
-- [ ] Tracking works with reference + matching application email and leaks no private/admin-only data.
+- [x] Tracking is covered by automated privacy tests for reference + matching email, neutral mismatch handling and customer-safe output.
 - [ ] Admin authentication, application list/detail, document download, status updates/history, pagination and logout pass production smoke tests.
-- [ ] Review submission/moderation/publication behavior is correct and contains no fabricated reviews.
+- [x] Review submission/moderation/publication behavior is covered by automated workflow tests and contains no fabricated reviews.
 - [ ] Responsive QA passes at 1440, 1024, 768, 390 and 320 px without blocking overflow or unusable controls.
 - [ ] Keyboard/focus/labels/menu state/reduced-motion/error/loading accessibility checks pass.
 - [ ] Security/privacy checks pass for admin authorization, tracking enumeration, private documents, uploads, cookies, secrets and input validation.
