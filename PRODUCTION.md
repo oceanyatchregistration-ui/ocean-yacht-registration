@@ -12,8 +12,10 @@ The application is designed for Cloudflare Workers with D1. Private document sto
 ## Required configuration
 
 - `ADMIN_EMAILS`: comma-separated administrator allowlist.
-- `ADMIN_PASSWORD`: secret administrator password, minimum 16 characters.
 - `ADMIN_SESSION_SECRET`: secret HMAC signing key, minimum 32 characters.
+- `GOOGLE_CLIENT_ID`: Google OAuth 2.0 Web application client ID.
+- `GOOGLE_CLIENT_SECRET`: Google OAuth 2.0 client secret; keep it only in encrypted platform secrets.
+- In Google Cloud, add `https://oceanyachtregistration.com/api/auth/google/callback` as an authorised redirect URI. Add the deployed branch/staging origin callback separately while testing before domain cutover.
 - `APP_URL`: canonical HTTPS origin, ultimately `https://oceanyachtregistration.com`.
 - `EMAIL_FROM_ADDRESS`: sender identity verified with the transactional email provider.
 - `EMAIL_REPLY_TO`: optional monitored business reply address.
@@ -55,11 +57,11 @@ Only point `oceanyachtregistration.com` to the deployment after the live accepta
 
 ## Administrator authentication
 
-The production admin portal uses a Worker-native signed session. Configure `ADMIN_EMAILS` as the allowlist and store both `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` as Cloudflare Worker secrets. `ADMIN_PASSWORD` must be at least 16 characters. `ADMIN_SESSION_SECRET` must be at least 32 characters and should be randomly generated. Never commit either value. Admin sessions are HttpOnly, SameSite=Strict, Secure on HTTPS, and expire after 12 hours.
+The production admin portal uses Google OAuth followed by a Worker-native signed session. `ADMIN_EMAILS` remains the explicit administrator allowlist: signing into Google does not grant access unless the verified Google email is authorised. Store `GOOGLE_CLIENT_SECRET` and `ADMIN_SESSION_SECRET` as Cloudflare Worker secrets. `ADMIN_SESSION_SECRET` must be at least 32 characters and should be randomly generated. The admin dashboard records authorised Google administrator identities, last login time and login count. Admin sessions are HttpOnly, SameSite=Strict, Secure on HTTPS, and expire after 12 hours.
 
 ```bash
-npx wrangler secret put ADMIN_PASSWORD --config wrangler.production.jsonc
+npx wrangler secret put GOOGLE_CLIENT_SECRET --config wrangler.production.jsonc
 npx wrangler secret put ADMIN_SESSION_SECRET --config wrangler.production.jsonc
 ```
 
-Do not place either secret in `wrangler.production.jsonc`, GitHub, screenshots, chat, or documentation.
+Do not place either secret in `wrangler.production.jsonc`, GitHub, screenshots, chat, or documentation. `GOOGLE_CLIENT_ID` is not a secret and may be configured as a Worker variable.
