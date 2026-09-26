@@ -39,7 +39,7 @@ Do not call the service production-ready until all of the following pass against
 1. Open the public site over HTTPS.
 2. Complete the five-step registration using a real test mailbox.
 3. Upload a harmless PDF and confirm it is not publicly addressable.
-4. Submit and receive an `OYR-XXXXXXXXXXXX` reference.
+4. Submit and receive the configured customer application reference. Before final release, confirm the client's requested short `C…PL` format and update the generator/routes/tests together; do not deploy an assumed format.
 5. Receive the customer confirmation email and administrator alert.
 6. Sign in as an allowlisted administrator and find the application.
 7. Download the private test document from the authenticated admin route.
@@ -47,7 +47,7 @@ Do not call the service production-ready until all of the following pass against
 9. Receive the customer status-update email.
 10. Track using reference + matching email and confirm only customer-safe data is returned.
 11. Verify wrong email and unknown reference return the same neutral response.
-12. Remove the test application/document according to the business's retention procedure after acceptance.
+12. Remove the test application/document according to the confirmed business retention procedure after acceptance. Do not automate the discussed ~10-day deletion until the client confirms the clock trigger and whether deletion covers documents only or broader application/customer data.
 
 ## Domain cutover
 
