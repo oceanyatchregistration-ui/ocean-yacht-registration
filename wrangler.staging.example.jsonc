@@ -1,0 +1,39 @@
+{
+  "name": "ocean-yacht-registration-staging",
+  "main": "server/worker.js",
+  "compatibility_date": "2026-03-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "routes": [
+    { "pattern": "staging.oceanyatchregistration.com", "custom_domain": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ocean-yacht-registration-staging",
+      "database_id": "REPLACE_WITH_STAGING_D1_DATABASE_ID",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "ocean-yacht-registration-staging-documents"
+    }
+  ],
+  "vars": {
+    "PUBLIC_ROOT_DOMAIN": "oceanyatchregistration.com",
+    "ADMIN_EMAILS": "oceanyatchregistration@gmail.com"
+  },
+  "rules": [
+    {
+      "type": "Text",
+      "globs": ["**/*.html"],
+      "fallthrough": true
+    }
+  ]
+}
