@@ -19,7 +19,16 @@
     }
   ],
 
+  "routes": [
+    { "pattern": "oceanyatchregistration.com", "custom_domain": true },
+    { "pattern": "www.oceanyatchregistration.com", "custom_domain": true },
+    { "pattern": "register.oceanyatchregistration.com", "custom_domain": true },
+    { "pattern": "track.oceanyatchregistration.com", "custom_domain": true },
+    { "pattern": "admin.oceanyatchregistration.com", "custom_domain": true }
+  ],
+
   "vars": {
+    "PUBLIC_ROOT_DOMAIN": "oceanyatchregistration.com",
     "ADMIN_EMAILS": "oceanyatchregistration@gmail.com",
     "SUPABASE_STORAGE_BUCKET": "registration-documents"
   },
