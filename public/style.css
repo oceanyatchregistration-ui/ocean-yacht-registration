@@ -322,34 +322,3 @@ header .brand-name{font-size:clamp(16px,1.55vw,22px);font-weight:650;letter-spac
 }
 
 
-/* Production unified company wordmark */
-header .brand-name{
-  display:inline-flex;
-  flex-direction:row;
-  align-items:baseline;
-  gap:.28em;
-  font-family:'Manrope',sans-serif;
-  font-size:clamp(17px,1.5vw,22px);
-  font-weight:650;
-  line-height:1;
-  letter-spacing:-.72px;
-  text-transform:none;
-  white-space:nowrap;
-}
-header .brand-ocean{font:inherit;letter-spacing:inherit}
-header .brand-yacht{
-  font-family:Georgia,'Times New Roman',serif;
-  font-size:1.03em;
-  font-weight:400;
-  font-style:italic;
-  letter-spacing:-.55px;
-}
-.site-header .brand-name{line-height:1}
-.site-header .brand-name small{margin:0}
-@media(max-width:700px){
-  header .brand-name{font-size:15px;gap:.24em;letter-spacing:-.45px}
-  header .brand-yacht{letter-spacing:-.35px}
-}
-@media(max-width:390px){
-  header .brand-name{font-size:13px;gap:.2em}
-}
