@@ -12,8 +12,7 @@ test('Approved cinematic hero assets and markup remain present',async()=>{
   assert.ok(hero,'cinematic hero section is missing');
   assert.match(hero,/class="hero-video(?:\s[^\"]*)?"/,'hero video element is missing');
   assert.match(hero,/\/media\/ocean-yacht-hero\.mp4/,'approved hero video source is missing');
-  assert.match(hero,/Register Your Yacht/,'client-approved hero headline is missing');
-  assert.match(hero,/Anywhere in the World\./,'client-approved hero headline is missing');
+  assert.match(hero,/Registration,[\s\S]*worthy of the yacht\./,'approved restored hero headline is missing');
   assert.match(hero,/Start your registration/,'approved hero CTA is missing');
   assert.match(hero,/Explore the process/,'approved hero secondary action is missing');
 
