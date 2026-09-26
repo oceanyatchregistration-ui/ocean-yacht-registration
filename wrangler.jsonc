@@ -3,9 +3,10 @@
   "main":"server/worker.js",
   "compatibility_date":"2026-03-01",
   "compatibility_flags":["nodejs_compat"],
+  "triggers": { "crons": ["17 3 * * *"] },
   "assets":{"directory":"dist/client","binding":"ASSETS","run_worker_first":true},
   "d1_databases":[{"binding":"DB","database_name":"ocean-local","database_id":"00000000-0000-4000-8000-000000000000","migrations_dir":"drizzle"}],
   "r2_buckets":[{"binding":"BUCKET","bucket_name":"ocean-private-local"}],
-  "vars":{"ADMIN_EMAILS":"abdulshahin60@gmail.com","ADMIN_SESSION_SECRET":"local-development-session-secret-32-chars-minimum","TEST_ADMIN_AUTH":"1"},
+  "vars": { "DOCUMENT_RETENTION_DAYS": "10","ADMIN_EMAILS":"abdulshahin60@gmail.com","ADMIN_SESSION_SECRET":"local-development-session-secret-32-chars-minimum","TEST_ADMIN_AUTH":"1"},
   "rules":[{"type":"Text","globs":["**/*.html"],"fallthrough":true}]
 }
