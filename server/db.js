@@ -14,7 +14,8 @@ const SERVICE_SURCHARGE={
  'ownership-transfer':35000,
  'modification-polish-registration':24900,
  'polish-deletion-certificate':24900,
- 'duplicate-polish-registration':24900
+ 'duplicate-polish-registration':24900,
+ 'extract-polish-register':9900
 };
 export async function pricing(env,packageData){
  await seedServices(env);
@@ -23,6 +24,7 @@ export async function pricing(env,packageData){
  if(!service)throw new HttpError(400,'Please choose an available registration service.');
  if(p.length==null)return {mode:'CALCULATED',currency:'EUR',serviceId:service.id,serviceName:service.name};
  const length=Number(p.length); if(!Number.isFinite(length)||length<=0||length>24)throw new HttpError(400,'Polish registration pricing is configured for vessels up to 24 metres.');
+ if(service.id==='extract-polish-register')return {mode:'FIXED',amountMinor:9900,currency:'EUR',serviceId:service.id,serviceName:service.name,items:[{label:'Extract from Polish Register',amountMinor:9900}],capturedAt:new Date().toISOString()};
  const base=length<=7?35000:length<=12?45000:55000;
  const serviceFee=SERVICE_SURCHARGE[service.id];
  const usage={PRIVATE:0,COMMERCIAL:25000,BAREBOAT:25000}[p.intendedUse];
