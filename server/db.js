@@ -38,7 +38,8 @@ export const id=()=>crypto.randomUUID();
 export const now=()=>new Date().toISOString();
 export function randomToken(){return [...crypto.getRandomValues(new Uint8Array(32))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export async function reference(env){
- const row=await stmt(env,`UPDATE reference_sequences SET next_value=next_value+1 WHERE name='customer_tracking' RETURNING next_value-1 AS value`).first();
- if(!row||!Number.isInteger(row.value)||row.value<990||row.value>9999)throw new HttpError(503,'A tracking reference could not be generated. Please try again.');
- return `C${row.value}PL`;
+ const row=await stmt(env,`SELECT max(CASE WHEN reference GLOB 'C[0-9]*PL' THEN CAST(substr(reference,2,length(reference)-3) AS INTEGER) END) AS value FROM applications`).first();
+ const next=Math.max(990,Number(row?.value||989)+1);
+ if(!Number.isInteger(next)||next>9999)throw new HttpError(503,'A tracking reference could not be generated. Please try again.');
+ return `C${next}PL`;
 }
