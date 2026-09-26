@@ -29,7 +29,25 @@ function adminAllowed(env,mail){return (env.ADMIN_EMAILS||'').split(',').map(x=>
 async function admin(req,env){const token=adminCookie(req),[payload,sig]=token.split('.');if(!payload||!sig||!env.ADMIN_SESSION_SECRET)throw new HttpError(401,'Sign in to access the administration area.');const actual=unb64url(sig),expected=await hmac(env.ADMIN_SESSION_SECRET,payload);if(!safeEqual(actual,expected))throw new HttpError(401,'Your administrator session is invalid. Please sign in again.');let data;try{data=JSON.parse(new TextDecoder().decode(unb64url(payload)));}catch{throw new HttpError(401,'Your administrator session is invalid. Please sign in again.');}const mail=String(data.email||'').trim().toLowerCase();if(!mail||!Number.isFinite(data.exp)||data.exp<Date.now())throw new HttpError(401,'Your administrator session has expired. Please sign in again.');if(!adminAllowed(env,mail))throw new HttpError(403,'Your account does not have administrator access.');const provider=data.provider==='google'?'google':'local';const identity=`${provider}:${mail}`;const user=await stmt(env,'SELECT id,email,role FROM users WHERE identity_id=?',identity).first();if(!user)throw new HttpError(401,'Your administrator session is no longer active. Please sign in again.');if(user.role!=='ADMIN')throw new HttpError(403,'Your account does not have administrator access.');return user;}
 async function fullApplication(env,ref){return stmt(env,`SELECT a.*,s.name AS service_name,c.name AS customer_name,c.email,c.phone,c.address,c.city,c.postal_code,c.country,c.type AS applicant_type,v.name AS vessel_name,v.type AS vessel_type,v.builder,v.model,v.build_year,v.identification,v.length,v.beam,v.draft,v.place_of_build,v.current_flag,v.intended_use FROM applications a JOIN customers c ON c.id=a.customer_id JOIN vessels v ON v.id=a.vessel_id JOIN services s ON s.id=a.service_id WHERE a.reference=? AND a.status!='DRAFT'`,ref).first();}
 async function historyList(env,appId,adminView=false){return (await stmt(env,adminView?`SELECT h.from_status AS fromStatus,h.to_status AS status,h.public_message AS message,h.created_at AS at,h.version,u.email AS changedBy FROM application_status_history h LEFT JOIN users u ON u.id=h.actor_id WHERE h.application_id=? ORDER BY h.version`:`SELECT to_status AS status,public_message AS message,created_at AS at FROM application_status_history WHERE application_id=? ORDER BY version`,appId).all()).results;}
-export default {async fetch(req,env,ctx){try{const url=new URL(req.url),path=url.pathname;
+async function purgeExpiredDocuments(env){
+  const retentionDays=Math.max(1,Number(env.DOCUMENT_RETENTION_DAYS||10));
+  const cutoff=new Date(Date.now()-retentionDays*86400000).toISOString();
+  let deleted=0,failed=0;
+  for(let pass=0;pass<10;pass++){
+    const rows=(await stmt(env,`SELECT id,storage_key FROM application_documents WHERE uploaded_at<=? ORDER BY uploaded_at LIMIT 100`,cutoff).all()).results;
+    if(!rows.length)break;
+    for(const row of rows){
+      try{
+        await storageDelete(env,row.storage_key);
+        await stmt(env,'DELETE FROM application_documents WHERE id=? AND uploaded_at<=?',row.id,cutoff).run();
+        deleted++;
+      }catch(e){failed++;console.error('OYR retention delete failed',{documentId:row.id,error:e?.message});}
+    }
+    if(rows.length<100)break;
+  }
+  return {deleted,failed,cutoff};
+}
+export default {async scheduled(event,env,ctx){ctx.waitUntil(purgeExpiredDocuments(env));},async fetch(req,env,ctx){try{const url=new URL(req.url),path=url.pathname;
 if(path.startsWith('/api/')){if(!['GET','POST','PATCH','DELETE'].includes(req.method))throw new HttpError(405,'Method not allowed.');if(req.method!=='GET')sameOrigin(req);db(env);
 if(path==='/api/services'&&req.method==='GET')return json({services:await catalogue(env),documentTypes:DOCUMENT_TYPES,consentVersion:CONSENT_VERSION});
 if(path==='/api/public-config'&&req.method==='GET')return json({contactEmail:env.PUBLIC_CONTACT_EMAIL||'',whatsapp:env.PUBLIC_WHATSAPP||'',businessAddress:env.PUBLIC_BUSINESS_ADDRESS||''});
