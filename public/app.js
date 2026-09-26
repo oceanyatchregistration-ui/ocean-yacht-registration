@@ -13,7 +13,7 @@ async function loadPublicContact(){try{const r=await fetch('/api/public-config')
 loadPublicContact();
 
 
-/* Cinematic hero playlist: self-hosted turquoise yacht footage with seamless dual-video crossfade. */
+/* Cinematic hero playlist: buffered dual-video crossfade with cold-load protection. */
 (function initHeroPlaylist(){
   const layers=[document.querySelector('.hero-video-a'),document.querySelector('.hero-video-b')];
   if(layers.some(v=>!v))return;
@@ -23,33 +23,75 @@ loadPublicContact();
     '/media/hero-yacht-03.mp4'
   ];
   const fallback='/media/ocean-yacht-hero.mp4';
+  const CROSSFADE_MS=1100;
+  const LEAD_SECONDS=3;
   let active=0,index=0,transitioning=false;
-  const nextIndex=()=>{index=(index+1)%playlist.length;return index};
-  const load=(video,src)=>{if(video.dataset.src===src)return;video.dataset.src=src;video.src=src;video.load()};
-  const prime=()=>load(layers[1-active],playlist[(index+1)%playlist.length]);
+
+  const load=(video,src)=>{
+    if(video.dataset.src===src)return;
+    video.dataset.src=src;
+    video.preload='auto';
+    video.src=src;
+    video.load();
+  };
+  const nextSrc=()=>playlist[(index+1)%playlist.length];
+  const prime=()=>load(layers[1-active],nextSrc());
+
+  const waitUntilPlayable=video=>new Promise((resolve,reject)=>{
+    if(video.readyState>=4)return resolve();
+    let settled=false;
+    const finish=ok=>{
+      if(settled)return;
+      settled=true;
+      cleanup();
+      ok?resolve():reject();
+    };
+    const ready=()=>finish(true);
+    const bad=()=>finish(false);
+    const cleanup=()=>{
+      video.removeEventListener('canplaythrough',ready);
+      video.removeEventListener('error',bad);
+      clearTimeout(timer);
+    };
+    video.addEventListener('canplaythrough',ready,{once:true});
+    video.addEventListener('error',bad,{once:true});
+    const timer=setTimeout(()=>finish(video.readyState>=3),5000);
+  });
 
   layers.forEach(video=>{
+    video.preload='auto';
     video.addEventListener('error',()=>{
-      if(video.dataset.src!==fallback){load(video,fallback);video.play().catch(()=>{})}
+      if(video.dataset.src!==fallback){
+        load(video,fallback);
+        video.play().catch(()=>{});
+      }
     });
   });
 
   async function advance(){
     if(transitioning)return;
     transitioning=true;
-    const from=layers[active],to=layers[1-active],target=playlist[nextIndex()];
+    const from=layers[active],to=layers[1-active];
+    const target=nextSrc();
     load(to,target);
     try{
-      await new Promise((resolve,reject)=>{
-        if(to.readyState>=3)return resolve();
-        const ok=()=>{cleanup();resolve()},bad=()=>{cleanup();reject()};
-        const cleanup=()=>{to.removeEventListener('canplay',ok);to.removeEventListener('error',bad)};
-        to.addEventListener('canplay',ok,{once:true});to.addEventListener('error',bad,{once:true});
-        setTimeout(()=>{cleanup();to.readyState>=2?resolve():reject()},6000);
-      });
-      to.currentTime=0;await to.play();
-      to.classList.add('is-active');from.classList.remove('is-active');
-      setTimeout(()=>{from.pause();active=1-active;transitioning=false;prime()},1100);
+      await waitUntilPlayable(to);
+      to.currentTime=0;
+      await to.play();
+
+      /* Do not fade away from the current clip until the incoming frame is rendering. */
+      if(to.readyState<2)throw new Error('Incoming hero video has no rendered frame');
+      to.classList.add('is-active');
+      from.classList.remove('is-active');
+
+      setTimeout(()=>{
+        from.pause();
+        from.currentTime=0;
+        active=1-active;
+        index=(index+1)%playlist.length;
+        transitioning=false;
+        prime();
+      },CROSSFADE_MS);
     }catch{
       transitioning=false;
       load(to,fallback);
@@ -57,9 +99,17 @@ loadPublicContact();
   }
 
   layers.forEach(video=>video.addEventListener('timeupdate',()=>{
-    if(video===layers[active]&&video.duration&&video.duration-video.currentTime<1.35)advance();
+    if(video!==layers[active]||transitioning||!Number.isFinite(video.duration))return;
+    if(video.duration-video.currentTime<=LEAD_SECONDS)advance();
   }));
-  layers.forEach(video=>video.addEventListener('ended',advance));
-  layers[0].play().catch(()=>{});
+
+  /* ended is only an emergency fallback; normal transitions happen while footage is still moving. */
+  layers.forEach(video=>video.addEventListener('ended',()=>{
+    if(video===layers[active]&&!transitioning)advance();
+  }));
+
+  const first=layers[0];
+  first.preload='auto';
+  first.play().catch(()=>{});
   prime();
 })();
