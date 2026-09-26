@@ -8,3 +8,8 @@ outputs/
 dist/
 .env.*
 !.env.example
+# Local media processing artifacts
+public/media/originals/
+public/media/*-fixed.mp4
+public/media/*-web.mp4
+public/media/hero-playlist.txt
