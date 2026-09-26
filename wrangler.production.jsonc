@@ -19,11 +19,7 @@
     }
   ],
 
-  "routes": [
-    { "pattern": "register.oceanyatchregistration.com", "custom_domain": true },
-    { "pattern": "track.oceanyatchregistration.com", "custom_domain": true },
-    { "pattern": "admin.oceanyatchregistration.com", "custom_domain": true }
-  ],
+  "workers_dev": true,
 
   "vars": {
     "PUBLIC_ROOT_DOMAIN": "oceanyatchregistration.com",
