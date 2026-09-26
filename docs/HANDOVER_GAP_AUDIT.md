@@ -42,11 +42,11 @@
 ## Implementation order
 
 1. Confirmed client-call field/content cleanup.
-2. Sixth-service and short-reference changes immediately after client-format/service confirmation.
-3. Partner/dealer route, isolated pricing context and source visibility.
-4. Registration/admin/tracking/email hardening and known UX failure states.
-5. Retention workflow after trigger/scope confirmation.
-6. Final navy/white/grey visual/content pass and logo asset integration.
-7. Full automated + responsive + security QA.
-8. Configure client domain/contact/email values and run deployed acceptance.
-9. Client review, approved corrections, release and handover documentation.
+2. Registration/admin/tracking/email hardening and known UX failure states.
+3. Sixth-service and short-reference changes immediately after client-format/service confirmation.
+4. Retention workflow after trigger/scope confirmation.
+5. Final navy/white/grey visual/content pass and logo asset integration.
+6. Full automated + responsive + security QA.
+7. Configure client domain/contact/email values and run deployed acceptance.
+8. Client review, approved corrections and main-system handover documentation.
+9. Partner/dealer system only after the main retail/customer system is complete; this is the final priority.
