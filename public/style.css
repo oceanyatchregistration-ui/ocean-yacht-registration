@@ -6,3 +6,239 @@
 @media(max-width:700px){.menu-toggle{display:block}.desktop-cta{display:none}header{position:relative;z-index:30}header nav{display:none;position:absolute;left:0;right:0;top:100%;background:var(--deep);padding:18px 22px 24px;flex-direction:column;gap:0;box-shadow:0 18px 30px #052f6650}header nav.open{display:flex}header nav a{padding:13px 0;border-bottom:1px solid #ffffff25}.brand-name{font-size:21px}.brand-name small{font-size:6px}.proof-grid{grid-template-columns:1fr 1fr}.proof-grid div{padding:19px 15px}.proof-grid strong{font-size:22px}.service-grid,.process-grid{grid-template-columns:1fr}.service-card{min-height:0}.marine-grid{grid-template-columns:1fr}.marine-image{height:350px}.price-grid{grid-template-columns:1fr}.floating-contact{right:12px;bottom:12px;gap:6px}.floating-btn{width:42px;height:42px;border-radius:10px}.floating-btn-icon svg{width:16px;height:16px}.floating-btn-label{font-size:6.5px;margin-top:1.5px}.hero-actions{align-items:flex-start;flex-direction:column;gap:8px}}
 .review-list{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.review-placeholder{grid-column:1/-1}.review-card{border:1px solid var(--line);padding:28px}.review-card>span{color:var(--blue);letter-spacing:3px}.review-card p{color:#426da7;font-size:14px;min-height:85px;margin:18px 0}.review-card strong,.review-card small{display:block}.review-card small{color:#718db4;margin-top:4px}.review-submit{margin-top:25px;border:1px solid var(--line);padding:0 25px}.review-submit summary{font-weight:650}.review-submit form{padding:10px 0 25px}.review-submit .button{width:auto}@media(max-width:700px){.review-list{grid-template-columns:1fr}.review-card p{min-height:0}}
 @media (prefers-reduced-motion:no-preference){.hero-visual img{animation:marineDrift 18s ease-in-out infinite alternate}.marine-image img{animation:marineDrift 24s ease-in-out infinite alternate}@keyframes marineDrift{from{transform:scale(1.01) translateX(0)}to{transform:scale(1.06) translateX(-1.2%)}}}
+
+
+/* Production port of approved cinematic hero checkpoint. */
+/* =========================================================
+   LUXURY MARINE V2 — CHECKPOINT 01
+   Art direction: cinematic marine / editorial / quiet luxury
+   ========================================================= */
+:root{
+  --ink:#071a2f;
+  --navy:#062a50;
+  --ocean:#075aa8;
+  --azure:#1c79d4;
+  --mist:#eef5fa;
+  --ice:#f7fafc;
+  --white:#fff;
+  --hairline:rgba(255,255,255,.24);
+}
+body{color:var(--ink);background:var(--white)}
+.site-header{
+  position:absolute;z-index:50;top:0;left:0;right:0;
+  background:transparent;color:#fff;
+  padding:30px clamp(24px,4vw,68px);
+  border-bottom:1px solid rgba(255,255,255,.2);
+  backdrop-filter:none;
+}
+.site-header .brand{gap:13px;font-size:initial;letter-spacing:0}
+.site-header .brandmark{
+  width:43px;height:31px;margin:0;display:flex;flex-direction:column;
+  justify-content:center;gap:4px;transform:none;font-size:0;
+}
+.site-header .brandmark i{height:1px;background:#fff;display:block;transform-origin:left center}
+.site-header .brandmark i:nth-child(1){width:33px;transform:rotate(-7deg)}
+.site-header .brandmark i:nth-child(2){width:43px}
+.site-header .brandmark i:nth-child(3){width:27px;transform:rotate(7deg)}
+.site-header .brand-name{
+  font-family:'Manrope',sans-serif;font-size:22px;font-weight:650;
+  letter-spacing:-.8px;text-transform:uppercase;line-height:.9
+}
+.site-header .brand-name small{
+  margin-top:7px;font-size:6.5px;font-weight:500;letter-spacing:2.8px;opacity:.78
+}
+.site-header nav{gap:clamp(20px,2.6vw,42px);align-items:center}
+.site-header nav a{
+  position:relative;font-size:12px;letter-spacing:.5px;color:rgba(255,255,255,.86)
+}
+.site-header nav a:after{
+  content:"";position:absolute;left:0;right:100%;bottom:-8px;height:1px;background:#fff;
+  transition:right .3s ease
+}
+.site-header nav a:hover{text-decoration:none;color:#fff}
+.site-header nav a:hover:after{right:0}
+.site-header .header-actions{gap:22px}
+.availability{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.availability i{width:6px;height:6px;border-radius:50%;background:#7ee2b8;box-shadow:0 0 0 4px rgba(126,226,184,.12)}
+.header-cta{
+  background:rgba(255,255,255,.08)!important;color:#fff!important;
+  border:1px solid rgba(255,255,255,.5)!important;
+  padding:11px 15px!important;gap:20px!important;
+  backdrop-filter:blur(10px)
+}
+.header-cta:hover{background:#fff!important;color:var(--navy)!important}
+
+.hero-v2{
+  position:relative;min-height:100svh;height:max(760px,100svh);overflow:hidden;
+  background:#05294d;color:#fff
+}
+.hero-media{position:absolute;inset:0}
+.hero-media img{
+  width:100%;height:100%;object-fit:cover;object-position:56% 53%;
+  filter:saturate(.82) contrast(1.04);transform:scale(1.025)
+}
+.hero-wash{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,rgba(3,22,43,.88) 0%,rgba(3,31,58,.72) 31%,rgba(3,38,69,.28) 57%,rgba(3,31,57,.16) 100%),
+    linear-gradient(180deg,rgba(2,19,38,.52) 0%,transparent 34%,rgba(2,21,40,.2) 70%,rgba(2,18,35,.72) 100%)
+}
+.hero-shell{
+  position:relative;height:100%;min-height:760px;
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.42fr);
+  align-items:end;gap:80px;padding-top:180px;padding-bottom:90px
+}
+.hero-v2 .hero-copy{padding:0 0 6vh;max-width:850px}
+.hero-meta{
+  display:flex;align-items:center;gap:16px;margin-bottom:28px;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.74)
+}
+.hero-meta-line{width:44px;height:1px;background:rgba(255,255,255,.55)}
+.hero-v2 h1{
+  margin:0 0 31px;font-size:clamp(64px,7.15vw,112px);line-height:.9;
+  letter-spacing:-5.8px;font-weight:450;color:#fff;max-width:980px
+}
+.hero-v2 h1 em{
+  display:inline-block;font-family:Georgia,'Times New Roman',serif;font-weight:400;
+  letter-spacing:-5px;color:#fff;font-style:italic
+}
+.hero-v2 .intro{
+  margin:0 0 38px;max-width:600px;font-size:16px;line-height:1.75;
+  color:rgba(255,255,255,.78)
+}
+.hero-v2 .hero-actions{display:flex;align-items:center;gap:28px}
+.hero-primary{
+  background:#fff;color:var(--navy);padding:16px 19px 16px 22px;
+  min-width:225px;border-color:#fff
+}
+.hero-primary:hover{background:#eaf4fb;transform:translateY(-2px)}
+.hero-secondary{display:flex;align-items:center;gap:12px;font-size:12px;color:rgba(255,255,255,.9)}
+.play-ring{
+  width:39px;height:39px;border:1px solid rgba(255,255,255,.48);border-radius:50%;
+  display:grid;place-items:center;font-size:15px;transition:.25s ease
+}
+.hero-secondary:hover .play-ring{background:#fff;color:var(--navy);transform:translateY(2px)}
+.hero-aside{
+  align-self:end;margin-bottom:7vh;padding:27px 0 0;
+  border-top:1px solid rgba(255,255,255,.4);max-width:310px;justify-self:end
+}
+.hero-aside-index{
+  font-family:Georgia,serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.55);
+  margin-bottom:35px
+}
+.hero-aside p{font-size:13px;line-height:1.65;color:rgba(255,255,255,.82);max-width:260px}
+.hero-aside-rule{height:1px;background:rgba(255,255,255,.22);margin:28px 0 15px}
+.hero-aside-bottom{
+  display:flex;justify-content:space-between;gap:20px;
+  font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5)
+}
+.hero-scroll{
+  position:absolute;left:48px;bottom:28px;display:flex;align-items:center;gap:12px;
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.48)
+}
+.hero-scroll i{display:block;width:48px;height:1px;background:rgba(255,255,255,.4)}
+
+.proof-strip{position:relative;background:#fff;border-bottom:1px solid #dce8f1}
+.proof-grid div{padding-top:31px;padding-bottom:31px}
+.proof-grid strong{color:var(--navy)}
+.proof-grid span{color:#657c91}
+
+@media(min-width:1500px){
+  .site-header{padding-left:max(68px,calc((100vw - 1340px)/2));padding-right:max(68px,calc((100vw - 1340px)/2))}
+  .hero-shell{max-width:1340px}
+  .hero-scroll{left:max(68px,calc((100vw - 1340px)/2))}
+}
+@media(max-width:1050px){
+  .availability{display:none}
+  .hero-shell{grid-template-columns:1fr .35fr;gap:35px}
+  .hero-v2 h1{font-size:clamp(64px,8.2vw,86px)}
+}
+@media(max-width:700px){
+  .site-header{padding:21px 22px;border-bottom-color:rgba(255,255,255,.18)}
+  .site-header .brand-name{font-size:18px}
+  .site-header .brand-name small{font-size:5.5px;letter-spacing:2.2px}
+  .site-header .brandmark{width:34px}
+  .site-header .brandmark i:nth-child(2){width:34px}
+  .site-header nav{
+    top:100%;background:rgba(4,31,58,.97);backdrop-filter:blur(16px);
+    padding:12px 22px 24px
+  }
+  .site-header nav a{font-size:13px;padding:15px 0}
+  .menu-toggle{border-color:rgba(255,255,255,.45);width:42px;height:42px}
+  .hero-v2{min-height:790px;height:100svh}
+  .hero-media img{object-position:63% center}
+  .hero-wash{
+    background:
+      linear-gradient(180deg,rgba(2,20,39,.64) 0%,rgba(3,31,57,.22) 33%,rgba(3,27,51,.48) 61%,rgba(2,18,35,.93) 100%),
+      linear-gradient(90deg,rgba(3,26,49,.34),transparent 80%)
+  }
+  .hero-shell{
+    min-height:790px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;
+    align-items:stretch;gap:0;padding-top:120px;padding-bottom:53px
+  }
+  .hero-v2 .hero-copy{padding:0}
+  .hero-meta{font-size:8px;letter-spacing:1.45px;margin-bottom:20px;gap:10px}
+  .hero-meta span:last-child{display:none}
+  .hero-meta-line{width:28px}
+  .hero-v2 h1{
+    font-size:clamp(51px,15vw,68px);line-height:.92;letter-spacing:-3.6px;margin-bottom:24px
+  }
+  .hero-v2 h1 em{letter-spacing:-3px}
+  .hero-v2 .intro{font-size:14px;line-height:1.65;max-width:390px;margin-bottom:28px}
+  .hero-v2 .hero-actions{flex-direction:row;align-items:center;gap:17px}
+  .hero-primary{min-width:0;padding:14px 15px;font-size:12px;gap:17px}
+  .hero-secondary{font-size:0;gap:0}
+  .play-ring{width:45px;height:45px;font-size:15px}
+  .hero-aside{display:none}
+  .hero-scroll{display:none}
+}
+@media(max-width:390px){
+  .hero-v2 h1{font-size:49px}
+  .hero-v2 .intro{font-size:13px}
+  .hero-primary{font-size:11px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .hero-media img{animation:luxuryMarineDrift 20s ease-in-out infinite alternate}
+  .hero-meta,.hero-v2 h1,.hero-v2 .intro,.hero-v2 .hero-actions{animation:heroReveal .8s both}
+  .hero-v2 h1{animation-delay:.08s}.hero-v2 .intro{animation-delay:.16s}.hero-v2 .hero-actions{animation-delay:.24s}
+  @keyframes luxuryMarineDrift{from{transform:scale(1.025) translate3d(0,0,0)}to{transform:scale(1.075) translate3d(-1.1%,.3%,0)}}
+  @keyframes heroReveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+}
+
+
+/* CHECKPOINT 01B — externally streamed cinematic hero */
+.hero-media .hero-poster,
+.hero-media .hero-video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:56% 53%
+}
+.hero-media .hero-poster{z-index:0;filter:saturate(.82) contrast(1.04);transform:scale(1.025)}
+.hero-media .hero-video{
+  z-index:1;filter:saturate(.78) contrast(1.05) brightness(.94);
+  transform:scale(1.015);background:transparent
+}
+.hero-media .hero-wash{z-index:2;pointer-events:none}
+@media(max-width:700px){
+  .hero-media .hero-poster,.hero-media .hero-video{object-position:58% center}
+  .hero-media .hero-video{transform:scale(1.025)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-media .hero-video{display:none}
+  .hero-media .hero-poster{display:block}
+}
+
+
+/* CHECKPOINT 01C — lock hero foreground above streamed media */
+.hero-v2 .hero-shell{z-index:4}
+.hero-v2 .hero-copy,
+.hero-v2 .hero-aside,
+.hero-v2 .hero-scroll{position:relative;z-index:5}
+.hero-v2 .hero-meta,
+.hero-v2 h1,
+.hero-v2 h1 em,
+.hero-v2 .intro,
+.hero-v2 .hero-actions,
+.hero-v2 .hero-primary,
+.hero-v2 .hero-secondary{color:#fff}
+.hero-v2 .hero-primary{color:var(--navy)}
+
+
