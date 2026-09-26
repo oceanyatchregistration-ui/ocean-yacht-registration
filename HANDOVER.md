@@ -2,13 +2,13 @@
 
 ## Canonical hosts
 
-- `https://oceanyatchregistration.com` — public marketing website
+- `https://oceanyatchregistration.com` — existing live website; **do not attach the new Worker until final cutover**
 - `https://register.oceanyatchregistration.com` — registration application
 - `https://track.oceanyatchregistration.com` — customer tracking
 - `https://admin.oceanyatchregistration.com` — administration
 - `https://staging.oceanyatchregistration.com` — isolated staging deployment (separate Worker/data resources)
 
-The production Worker routes the first four hosts. Legacy public paths `/register`, `/track`, and `/admin` redirect to their canonical hosts.
+During the pre-cutover phase, the production Worker is attached only to `register`, `track`, and `admin`. The root domain and `www` remain on the existing live website until explicit final-cutover approval.
 
 ## Production deployment
 
@@ -39,7 +39,7 @@ npm test
 npx wrangler deploy --config wrangler.production.jsonc
 ```
 
-After deployment, verify `/health` on each canonical production host, complete one real registration in a controlled acceptance test, verify private document upload/download, verify tracking with the submitted reference/email, verify admin login/status update, and verify transactional email delivery.
+After deployment, verify `/health` on `register`, `track`, and `admin`, confirm the root domain still serves the existing live website, complete one controlled registration in a controlled acceptance test, verify private document upload/download, verify tracking with the submitted reference/email, verify admin login/status update, and verify transactional email delivery.
 
 ## Staging isolation
 
